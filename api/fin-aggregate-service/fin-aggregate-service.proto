@@ -1,0 +1,199 @@
+syntax = "proto3";
+
+package fin_aggregator_service;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/handmade-jewelry/user/pkg/fin-aggregator;fin_aggregator_service";
+
+service FinAggregatorService {
+  rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse) {
+    option (google.api.http) = {
+      get: "/transactions"
+    };
+  }
+
+  rpc UpdateTransaction(UpdateTransactionRequest) returns (UpdateTransactionResponse) {
+    option (google.api.http) = {
+      patch: "/transactions/{transaction_id}"
+      body: "*"
+    };
+  }
+
+  rpc MonzoCallback(MonzoCallbackRequest) returns (MonzoCallbackResponse) {
+    option (google.api.http) = {
+      get: "/monzo/callback"
+    };
+  }
+
+  rpc LoadMonzoTransactions(LoadMonzoTransactionsRequest) returns (LoadMonzoTransactionsResponse) {
+    option (google.api.http) = {
+      get: "/monzo/transactions"
+    };
+  }
+
+  rpc GetMonzoAuthURL(GetMonzoAuthURLRequest) returns (GetMonzoAuthURLResponse) {
+    option (google.api.http) = {
+      get: "/monzo/auth-url"
+    };
+  }
+
+  rpc UploadCSV(UploadCSVRequest) returns (UploadCSVResponse) {
+    option (google.api.http) = {
+      post: "/upload-csv"
+      body: "*"
+    };
+  }
+
+  rpc ListBank(ListBankRequest) returns (ListBankResponse) {
+    option (google.api.http) = {
+      get: "/banks"
+    };
+  }
+
+  rpc ListUser(ListUserRequest) returns (ListUserResponse) {
+    option (google.api.http) = {
+      get: "/users"
+    };
+  }
+
+  rpc ListCategory(ListCategoryRequest) returns (ListCategoryResponse) {
+    option (google.api.http) = {
+      get: "/categories"
+    };
+  }
+
+  rpc ListTransactionType(ListTransactionTypeRequest) returns (ListTransactionTypeResponse) {
+    option (google.api.http) = {
+      get: "/transaction-types"
+    };
+  }
+}
+
+enum TransactionType {
+  UNSPECIFIED = 0;
+  INCOME = 1;
+  OUTCOME = 2;
+}
+
+message Transaction {
+  int64 id = 1;
+  int64 bank_id = 2;
+  string external_id = 3;
+  int64 user_id = 4;
+  google.protobuf.Timestamp transaction_date = 5;
+  string amount = 6;
+  int64 category_id = 7;
+  string description = 8;
+  TransactionType type = 9;
+  google.protobuf.Timestamp created_at = 10;
+  string bank_name = 11;
+  string category_name = 12;
+  string user_name = 13;
+}
+
+message GetTransactionsRequest {
+  int32 month = 1;
+  int32 year = 2;
+  int64 user_id = 3;
+  int64 bank_id = 4;
+}
+
+message GetTransactionsResponse {
+  repeated Transaction transactions = 1;
+  int32 total_count = 2;
+  string total_income = 3;
+  string total_outcome = 4;
+}
+
+message UpdateTransactionRequest {
+  int64 transaction_id = 1;
+  optional int64 category_id = 2;
+  optional TransactionType type = 3;
+}
+
+message UpdateTransactionResponse {
+  Transaction transaction = 1;
+}
+
+message MonzoCallbackRequest {
+  string code = 1;
+  string state = 2;
+}
+
+message MonzoCallbackResponse {
+  bool success = 1;
+}
+
+message GetMonzoAuthURLRequest {}
+
+message GetMonzoAuthURLResponse {
+  string auth_url = 1;
+}
+
+message LoadMonzoTransactionsRequest {
+  google.protobuf.Timestamp since = 1;
+  google.protobuf.Timestamp before = 2;
+}
+
+message LoadMonzoTransactionsResponse {
+  repeated Transaction transactions = 1;
+}
+
+message UploadCSVRequest{
+  bytes csv_data = 1;
+  string filename = 2;
+  int64 bank_id = 3;
+  int64 user_id = 4;
+}
+
+message UploadCSVResponse{
+  bool success = 1;
+  repeated RecordError record_error = 2;
+}
+
+message RecordError {
+  int64 row_id = 1;
+  repeated string errors = 2;
+}
+
+message ListBankRequest{}
+
+message ListBankResponse{
+  repeated Bank banks = 1;
+}
+
+message Bank {
+  int64 id = 1;
+  string name = 2;
+}
+
+message ListUserRequest{}
+
+message ListUserResponse{
+  repeated User users = 1;
+}
+
+message User {
+  int64 id = 1;
+  string name = 2;
+}
+
+message ListCategoryRequest {}
+
+message ListCategoryResponse {
+  repeated Category category = 1;
+}
+
+message Category {
+  int64 id = 1;
+  string name = 2;
+}
+
+message ListTransactionTypeRequest {}
+
+message ListTransactionTypeResponse {
+  repeated TransactionType type = 1;
+}

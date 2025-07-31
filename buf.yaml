@@ -1,0 +1,4 @@
+version: v1
+name: buf.build/local/fin-aggregator
+deps:
+  - buf.build/googleapis/googleapis

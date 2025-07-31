@@ -1,0 +1,27 @@
+# Monzo API
+monzo:
+  redirect_uri: ""
+
+# gRPC
+grpc:
+  port: ":"
+  network: ""
+
+# HTTP
+http:
+  port: ":"
+  host: ""
+  graceful_timeout: ""
+  client_timeout: ""
+
+# DB
+database:
+  name: ""
+  user: ""
+  host: ""
+  port: ""
+  password: ""
+  ssl_mode: ""
+  max_cons:
+  min_cons:
+  max_con_lifetime: ""

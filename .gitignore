@@ -1,0 +1,8 @@
+# IDE
+/.idea
+*.iml
+
+# Config local
+/config/.env_local
+/config/values_local.yaml
+
