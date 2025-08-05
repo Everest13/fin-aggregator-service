@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"github.com/Everest13/fin-aggregator-service/internal/utils/logger"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,10 +19,11 @@ func NewService(dbPool *pgxpool.Pool) *Service {
 }
 
 func (s *Service) UserList(ctx context.Context) ([]User, error) {
-	banks, err := s.repo.getUserList(ctx)
+	users, err := s.repo.getUserList(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user list: %v", err)
+		logger.Error("failed to get user list", err)
+		return nil, status.Errorf(codes.Internal, "failed to get user list")
 	}
 
-	return banks, nil
+	return users, nil
 }

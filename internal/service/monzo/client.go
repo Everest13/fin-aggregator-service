@@ -36,7 +36,7 @@ const (
 	refreshTokenField       = "refresh_token"
 )
 
-const lenState = 32 //todo убрать хардкод
+const lenState = 32
 
 type MonzoCfg struct {
 	ClientID     string
@@ -59,22 +59,40 @@ func newClient(timeout time.Duration, monzoCfg *MonzoCfg) *client {
 	}
 }
 
-func (c *client) sendResponse(req *http.Request) (io.Reader, error) {
+type requestData struct {
+	method  string
+	url     string
+	values  url.Values
+	headers map[string]string
+}
+
+func (c *client) sendResponse(ctx context.Context, reqData requestData) (io.Reader, error) {
+	req, err := http.NewRequestWithContext(ctx, reqData.method, reqData.url, bytes.NewBufferString(reqData.values.Encode()))
+	if err != nil {
+		logger.ErrorWithFields("failed to create request", err, "req_data", reqData)
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	for key, value := range reqData.headers {
+		req.Header.Set(key, value)
+	}
+
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		logger.Error("failed to send request", err)
-		return nil, fmt.Errorf("failed to send request: %v", err)
+		logger.ErrorWithFields("failed to send request", err, "url", req.URL.String(), "method", req.Method)
+		return nil, fmt.Errorf("failed to send request")
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %v", err)
+		logger.ErrorWithFields("failed to read response body", err, "url", req.URL.String(), "status_code", resp.StatusCode)
+		return nil, fmt.Errorf("failed to read response body")
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		logger.ErrorWithFields("monzo API error", err, "body", string(body))
-		return nil, fmt.Errorf("monzo API error %d: %s", resp.StatusCode, string(body))
+		logger.ErrorWithFields("monzo API error", fmt.Errorf("unexpected status code"), "url", req.URL.String(), "status_code", resp.StatusCode, "body", string(body))
+		return nil, fmt.Errorf("monzo API error")
 	}
 
 	return bytes.NewReader(body), nil
@@ -102,15 +120,16 @@ func (c *client) getTokens(ctx context.Context, code string) (*tokenResponse, er
 	values.Set(codeField, code)
 	values.Set(scopeField, "read:accounts read:transactions")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, getAuthTokenURL, bytes.NewBufferString(values.Encode()))
-	if err != nil {
-		logger.Error("failed to create token request", err)
-		return nil, fmt.Errorf("failed to create token request: %w", err)
+	reqData := requestData{
+		method: http.MethodPost,
+		url:    getAuthTokenURL,
+		values: values,
+		headers: map[string]string{
+			contentTypeHeader: "application/x-www-form-urlencoded",
+		},
 	}
 
-	req.Header.Set(contentTypeHeader, "application/x-www-form-urlencoded")
-
-	body, err := c.sendResponse(req)
+	body, err := c.sendResponse(ctx, reqData)
 	if err != nil {
 		logger.Error("failed to send account id request", err)
 		return nil, err
@@ -126,15 +145,15 @@ func (c *client) getTokens(ctx context.Context, code string) (*tokenResponse, er
 }
 
 func (c *client) getAccountID(ctx context.Context, accessToken string) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getAccountsURL, nil)
-	if err != nil {
-		logger.Error("failed to create accounts request", err)
-		return "", fmt.Errorf("failed to create accounts request: %w", err)
+	reqData := requestData{
+		method: http.MethodGet,
+		url:    getAccountsURL,
+		headers: map[string]string{
+			authHeader: bearerSchema + " " + accessToken,
+		},
 	}
 
-	req.Header.Set(authHeader, bearerSchema+" "+accessToken)
-
-	body, err := c.sendResponse(req)
+	body, err := c.sendResponse(ctx, reqData)
 	if err != nil {
 		logger.Error("failed to send account id request", err)
 		return "", err
@@ -166,15 +185,16 @@ func (c *client) getMonzoTransactions(ctx context.Context, accessToken string, a
 	values.Set(transactionsBeforeField, before.Format(time.RFC3339))
 
 	reqURL := fmt.Sprintf("%s?%s", getTransactionsURL, values.Encode())
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
-	if err != nil {
-		logger.Error("failed to create transactions request", err)
-		return nil, fmt.Errorf("failed to create transactions request: %w", err)
+	reqData := requestData{
+		method: http.MethodGet,
+		url:    reqURL,
+		values: values,
+		headers: map[string]string{
+			authHeader: bearerSchema + " " + accessToken,
+		},
 	}
 
-	req.Header.Set(authHeader, bearerSchema+" "+accessToken)
-
-	body, err := c.sendResponse(req)
+	body, err := c.sendResponse(ctx, reqData)
 	if err != nil {
 		logger.Error("failed to send transactions request", err)
 		return nil, err
@@ -197,15 +217,16 @@ func (c *client) refreshToken(ctx context.Context, refreshToken string) (*tokenR
 	values.Set(clientSecretField, cfg.ClientSecret)
 	values.Set(refreshTokenField, refreshToken)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, getAuthTokenURL, bytes.NewBufferString(values.Encode()))
-	if err != nil {
-		logger.Error("failed to create token request", err)
-		return nil, fmt.Errorf("failed to create token request: %w", err)
+	reqData := requestData{
+		method: http.MethodPost,
+		url:    getAuthTokenURL,
+		values: values,
+		headers: map[string]string{
+			contentTypeHeader: "application/x-www-form-urlencoded",
+		},
 	}
 
-	req.Header.Set(contentTypeHeader, "application/x-www-form-urlencoded")
-
-	body, err := c.sendResponse(req)
+	body, err := c.sendResponse(ctx, reqData)
 	if err != nil {
 		logger.Error("failed to send token request", err)
 		return nil, err

@@ -18,6 +18,7 @@ func newRepository(dbPool *pgxpool.Pool) *repository {
 		dbPool: dbPool,
 	}
 }
+
 func (r *repository) getBank(ctx context.Context, id int64) (*Bank, error) {
 	query, args, err := squirrel.
 		Select("*").
@@ -51,7 +52,7 @@ func (r *repository) getBankList(ctx context.Context) ([]Bank, error) {
 	var banks []Bank
 	err = pgxscan.Select(ctx, r.dbPool, &banks, query, args...)
 	if err != nil {
-		//todo
+		return nil, err
 	}
 
 	return banks, nil
@@ -59,9 +60,15 @@ func (r *repository) getBankList(ctx context.Context) ([]Bank, error) {
 
 func (r *repository) getBankHeaders(ctx context.Context, bankID int64) ([]Header, error) {
 	query, args, err := squirrel.
-		Select("*").
+		Select(
+			"id",
+			"bank_id",
+			"name",
+			"ARRAY_AGG(target_field) AS target_field",
+		).
 		From(bankHeaderTable).
 		Where(squirrel.Eq{"bank_id": bankID}).
+		GroupBy("id", "bank_id", "name").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
@@ -71,7 +78,7 @@ func (r *repository) getBankHeaders(ctx context.Context, bankID int64) ([]Header
 	var headers []Header
 	err = pgxscan.Select(ctx, r.dbPool, &headers, query, args...)
 	if err != nil {
-		//todo
+		return nil, err
 	}
 
 	return headers, nil

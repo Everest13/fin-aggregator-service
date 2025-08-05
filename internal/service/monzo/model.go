@@ -18,7 +18,6 @@ type authTokens struct {
 	refreshToken string
 	expiresIn    int64
 	issuedAt     time.Time
-	accountID    string
 }
 
 func (a *authTokens) IsExpired() bool {

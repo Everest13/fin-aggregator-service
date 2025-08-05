@@ -21,8 +21,14 @@ func newRepository(dbPool *pgxpool.Pool) *repository {
 
 func (r *repository) getUserList(ctx context.Context) ([]User, error) {
 	query, args, err := squirrel.
-		Select("*").
-		From(userTable).
+		Select(
+			"u.id",
+			"u.name",
+			"ARRAY_REMOVE(ARRAY_AGG(ub.bank_id), NULL) AS banks",
+		).
+		From("users u").
+		LeftJoin("user_bank ub ON u.id = ub.user_id").
+		GroupBy("u.id, u.name").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
@@ -32,7 +38,7 @@ func (r *repository) getUserList(ctx context.Context) ([]User, error) {
 	var users []User
 	err = pgxscan.Select(ctx, r.dbPool, &users, query, args...)
 	if err != nil {
-		//todo
+		return nil, err
 	}
 
 	return users, nil

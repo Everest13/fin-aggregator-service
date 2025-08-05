@@ -1,7 +1,10 @@
 package parser
 
 import (
+	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/Everest13/fin-aggregator-service/internal/service/transaction"
 )
 
@@ -19,7 +22,7 @@ func newAmexParser(baseParser *baseParser) *amexParser {
 	return aP
 }
 
-func (a *amexParser) parseAmount(tr *transaction.Transaction, data []string) error {
+func (a *amexParser) parseAmount(_ context.Context, tr *transaction.Transaction, data []string) error {
 	if len(data) == 0 || data[0] == "" {
 		return fmt.Errorf("empty amount data")
 	}
@@ -27,8 +30,11 @@ func (a *amexParser) parseAmount(tr *transaction.Transaction, data []string) err
 	tr.Type = transaction.UnspecifiedTransactionType
 
 	amountStr := data[0]
-	//todo check amount
-	tr.Amount = amountStr
 
+	if _, err := strconv.ParseFloat(amountStr, 64); err != nil {
+		return fmt.Errorf("invalid amount format: %s", amountStr)
+	}
+
+	tr.Amount = amountStr
 	return nil
 }

@@ -71,6 +71,7 @@ func (a *App) initDeps(ctx context.Context) error {
 func (a *App) initConfig() error {
 	err := config.LoadValues()
 	if err != nil {
+		logger.Error("failed to load config", err)
 		return err
 	}
 
@@ -158,6 +159,7 @@ func (a *App) initDb(ctx context.Context) error {
 	)
 	cfg, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
+		logger.Error("failed to parse db config", err)
 		return fmt.Errorf("failed to parse db config: %w", err)
 	}
 
@@ -167,10 +169,12 @@ func (a *App) initDb(ctx context.Context) error {
 
 	dbPool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
+		logger.Error("unable to create db pool", err)
 		return fmt.Errorf("unable to create pool: %w", err)
 	}
 
 	if err = dbPool.Ping(ctx); err != nil {
+		logger.Error("failed to ping db", err)
 		return fmt.Errorf("failed to ping db: %w", err)
 	}
 
@@ -186,16 +190,10 @@ func (a *App) initDb(ctx context.Context) error {
 
 func (a *App) initService(ctx context.Context) error {
 	a.bankService = bank.NewService(a.dBPool)
-	err := a.bankService.Initialize(ctx)
-	if err != nil {
-		logger.Error("failed to initialize bank service store", err)
-		return err
-	}
-
 	a.userService = user.NewService(a.dBPool)
 
 	a.categoryService = category.NewService(a.dBPool)
-	err = a.categoryService.Initialize(ctx)
+	err := a.categoryService.Initialize(ctx)
 	if err != nil {
 		logger.Error("failed to initialize category service store", err)
 		return err
@@ -217,7 +215,7 @@ func (a *App) initService(ctx context.Context) error {
 	},
 		a.cfg.HTTP.ClientTimeout,
 		a.transactionService,
-		a.categoryService.Store(),
+		a.categoryService,
 	)
 
 	return nil

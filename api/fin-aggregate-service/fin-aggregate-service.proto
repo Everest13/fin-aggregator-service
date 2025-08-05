@@ -22,21 +22,27 @@ service FinAggregatorService {
     };
   }
 
+  rpc GetMonzoAuthURL(GetMonzoAuthURLRequest) returns (GetMonzoAuthURLResponse) {
+    option (google.api.http) = {
+      get: "/monzo/auth-url"
+    };
+  }
+
   rpc MonzoCallback(MonzoCallbackRequest) returns (MonzoCallbackResponse) {
     option (google.api.http) = {
       get: "/monzo/callback"
     };
   }
 
-  rpc LoadMonzoTransactions(LoadMonzoTransactionsRequest) returns (LoadMonzoTransactionsResponse) {
+  rpc GetMonzoAccount(MonzoAccountRequest) returns (MonzoAccountResponse) {
     option (google.api.http) = {
-      get: "/monzo/transactions"
+      get: "/monzo/account"
     };
   }
 
-  rpc GetMonzoAuthURL(GetMonzoAuthURLRequest) returns (GetMonzoAuthURLResponse) {
+  rpc LoadMonzoTransactions(LoadMonzoTransactionsRequest) returns (LoadMonzoTransactionsResponse) {
     option (google.api.http) = {
-      get: "/monzo/auth-url"
+      get: "/monzo/transactions"
     };
   }
 
@@ -127,6 +133,12 @@ message MonzoCallbackResponse {
   bool success = 1;
 }
 
+message MonzoAccountRequest {}
+
+message MonzoAccountResponse {
+  bool success = 1;
+}
+
 message GetMonzoAuthURLRequest {}
 
 message GetMonzoAuthURLResponse {
@@ -136,10 +148,12 @@ message GetMonzoAuthURLResponse {
 message LoadMonzoTransactionsRequest {
   google.protobuf.Timestamp since = 1;
   google.protobuf.Timestamp before = 2;
+  int64 user_id = 3;
+  int64 bank_id = 4;
 }
 
 message LoadMonzoTransactionsResponse {
-  repeated Transaction transactions = 1;
+  bool success = 1;
 }
 
 message UploadCSVRequest{
@@ -165,9 +179,16 @@ message ListBankResponse{
   repeated Bank banks = 1;
 }
 
+enum BankImportMethod {
+  UNDEFINED = 0;
+  CSV = 1;
+  API = 2;
+}
+
 message Bank {
   int64 id = 1;
   string name = 2;
+  BankImportMethod import_method = 3;
 }
 
 message ListUserRequest{}
@@ -179,6 +200,7 @@ message ListUserResponse{
 message User {
   int64 id = 1;
   string name = 2;
+  repeated int64 banks = 3;
 }
 
 message ListCategoryRequest {}

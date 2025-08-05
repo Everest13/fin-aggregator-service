@@ -1,6 +1,51 @@
-import { useState, useEffect, useRef } from 'react';
-import { Upload, Calendar, ChevronLeft, ChevronRight, ChevronDown, Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import UploadTransactions from './UploadTransactions.jsx';
+import TransactionsList from './TransactionsList.jsx';
 import './App.css';
+
+// Monzo Auth Modal Component
+function MonzoAuthModal({ onConfirm, onClose, error }) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [modalError, setModalError] = useState(error);
+
+    const handleConfirm = async () => {
+        setIsLoading(true);
+        setModalError(null);
+        try {
+            const success = await onConfirm();
+            if (!success) {
+                setModalError('Failed to confirm Monzo account access');
+            }
+        } catch (err) {
+            setModalError(err.message || 'Failed to confirm Monzo account');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <button className="modal-close" onClick={onClose}>×</button>
+                <h3>Allow access to your Monzo data!</h3>
+                {modalError && (
+                    <div className="modal-error">
+                        {modalError}
+                    </div>
+                )}
+                <div className="modal-actions">
+                    <button
+                        className="modal-button confirm"
+                        onClick={handleConfirm}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Confirming...' : 'OK'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 // API functions
 const API = {
@@ -17,11 +62,9 @@ const API = {
     },
 
     async uploadCSV(bankId, userId, file) {
-        // Читаем файл как base64
         const reader = new FileReader();
         const base64Data = await new Promise((resolve, reject) => {
             reader.onload = (e) => {
-                // Убираем префикс "data:text/csv;base64," или подобный
                 const base64 = e.target.result.split(',')[1];
                 resolve(base64);
             };
@@ -29,9 +72,8 @@ const API = {
             reader.readAsDataURL(file);
         });
 
-        // Создаем объект согласно protobuf структуре
         const requestData = {
-            csv_data: base64Data, // Отправляем как base64 строку
+            csv_data: base64Data,
             filename: file.name,
             bank_id: parseInt(bankId, 10),
             user_id: parseInt(userId, 10)
@@ -77,42 +119,39 @@ const API = {
         return response.json();
     },
 
-    async getTransactionTypes() {
-        const response = await fetch('/transaction-types');
-        if (!response.ok) throw new Error('Failed to fetch transaction types');
-        return response.json();
-    },
-
-    async loadMonzoTransactions(month, year) {
+    async loadMonzoTransactions(month, year, userId, bankId) {
         try {
-            // Вычисляем даты начала и конца месяца
-            const startDate = new Date(year, month - 1, 1); // month - 1, так как в JS месяцы от 0
-            const endDate = new Date(year, month, 0, 23, 59, 59); // последний день месяца
+            const startDate = new Date(year, month - 1, 1);
+            const endDate = new Date(year, month, 0, 23, 59, 59);
 
-            // Форматируем в ISO строки (RFC3339)
             const since = startDate.toISOString();
             const before = endDate.toISOString();
 
-            const url = `/monzo/transactions?since=${encodeURIComponent(since)}&before=${encodeURIComponent(before)}`;
-            console.log('Loading Monzo transactions for period:', { since, before });
+            const url = `/monzo/transactions?since=${encodeURIComponent(since)}&before=${encodeURIComponent(before)}&user_id=${userId}&bank_id=${bankId}`;
+            console.log('Loading Monzo transactions with params:', { since, before, userId, bankId });
 
             const response = await fetch(url);
-            const data = await response.json();
 
-            console.log('Monzo transactions response:', data);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Monzo API error response:', errorText);
 
-            // Проверяем различные индикаторы того, что нужна авторизация
-            if (!response.ok ||
-                data.host === "api.monzo.com" ||
-                !data.transactions ||
-                response.status === 401) {
-                return { needsAuth: true };
+                // Check if error is Unauthenticated
+                if (response.status === 401 || errorText.includes('Unauthenticated')) {
+                    return { needsAuth: true };
+                }
+
+                throw new Error('Failed to load transactions: ' + errorText);
             }
 
+            const data = await response.json();
+            console.log('Monzo transactions response:', data);
+
+            // New response format only has success boolean
             return data;
         } catch (error) {
             console.error('Error loading Monzo transactions:', error);
-            return { needsAuth: true };
+            throw error;
         }
     },
 
@@ -130,564 +169,52 @@ const API = {
             throw error;
         }
     },
-};
 
-// Month navigation component
-function MonthNavigation({ currentDate, onDateChange }) {
-    const months = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
-    const handlePrevMonth = () => {
-        const newDate = new Date(currentDate);
-        newDate.setMonth(newDate.getMonth() - 1);
-        onDateChange(newDate);
-    };
-
-    const handleNextMonth = () => {
-        const newDate = new Date(currentDate);
-        newDate.setMonth(newDate.getMonth() + 1);
-        onDateChange(newDate);
-    };
-
-    const isCurrentMonth = () => {
-        const now = new Date();
-        return currentDate.getMonth() === now.getMonth() &&
-            currentDate.getFullYear() === now.getFullYear();
-    };
-
-    return (
-        <div className="month-nav">
-            <button onClick={handlePrevMonth} className="nav-button">
-                <ChevronLeft size={20} />
-                Previous
-            </button>
-            <div className="month-display">
-                {months[currentDate.getMonth()]} {currentDate.getFullYear()}
-            </div>
-            <button
-                onClick={handleNextMonth}
-                disabled={isCurrentMonth()}
-                className="nav-button"
-            >
-                Next
-                <ChevronRight size={20} />
-            </button>
-        </div>
-    );
-}
-
-// Category dropdown component
-function CategoryDropdown({ transaction, categories, onUpdate }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [isUpdating, setIsUpdating] = useState(false);
-    const dropdownRef = useRef(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const handleCategorySelect = async (categoryId) => {
-        if (categoryId === transaction.categoryId) {
-            setIsOpen(false);
-            return;
-        }
-
-        setIsUpdating(true);
+    async callMonzoCallback(code, state) {
         try {
-            await onUpdate(transaction.id, { category_id: categoryId });
-            setIsOpen(false);
-        } catch (error) {
-            console.error('Failed to update category:', error);
-        } finally {
-            setIsUpdating(false);
-        }
-    };
+            const url = `/monzo/callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state)}`;
 
-    // Use categoryName from transaction or find category by ID
-    const categoryName = transaction.categoryName ||
-        (transaction.categoryId && categories.find(c => c.id === transaction.categoryId)?.name) ||
-        'Uncategorized';
-    const isUncategorized = categoryName === 'Uncategorized';
+            console.log('Calling Monzo callback URL:', url);
 
-    return (
-        <div className="category-wrapper" ref={dropdownRef}>
-            <button
-                className={`category-button ${isUncategorized ? 'uncategorized' : ''}`}
-                onClick={() => setIsOpen(!isOpen)}
-                disabled={isUpdating}
-            >
-                {isUpdating ? 'Updating...' : categoryName}
-                <ChevronDown size={16} />
-            </button>
-            {isOpen && (
-                <div className="category-dropdown">
-                    {categories.map(category => (
-                        <div
-                            key={category.id}
-                            className={`category-option ${category.id === transaction.categoryId ? 'selected' : ''}`}
-                            onClick={() => handleCategorySelect(category.id)}
-                        >
-                            {category.name}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
 
-// Transaction type dropdown component
-function TransactionTypeDropdown({ transaction, onUpdate }) {
-    const [isOpen, setIsOpen] = useState(false);
-    const [isUpdating, setIsUpdating] = useState(false);
-    const dropdownRef = useRef(null);
+            console.log('Response status:', response.status);
 
-    const types = [
-        { value: 'INCOME', label: 'Income' },
-        { value: 'OUTCOME', label: 'Outcome' }
-    ];
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setIsOpen(false);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        };
 
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
+            const data = await response.json();
+            console.log('Monzo callback response:', data);
 
-    const handleTypeSelect = async (type) => {
-        if (type === transaction.type) {
-            setIsOpen(false);
-            return;
-        }
-
-        setIsUpdating(true);
-        try {
-            await onUpdate(transaction.id, { type });
-            setIsOpen(false);
+            return data;
         } catch (error) {
-            console.error('Failed to update type:', error);
-        } finally {
-            setIsUpdating(false);
+            console.error('Error calling Monzo callback:', error);
+            throw error;
         }
-    };
+    },
 
-    const currentType = types.find(t => t.value === transaction.type);
+    async confirmMonzoAccount() {
+        try {
+            const response = await fetch('/monzo/account');
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Failed to confirm Monzo account');
+            }
 
-    return (
-        <div className="type-wrapper" ref={dropdownRef}>
-            <button
-                className={`type-button ${transaction.type?.toLowerCase()}`}
-                onClick={() => setIsOpen(!isOpen)}
-                disabled={isUpdating}
-            >
-                {isUpdating ? 'Updating...' : (currentType?.label || 'Unknown')}
-                <ChevronDown size={16} />
-            </button>
-            {isOpen && (
-                <div className="type-dropdown">
-                    {types.map(type => (
-                        <div
-                            key={type.value}
-                            className={`type-option ${type.value === transaction.type ? 'selected' : ''}`}
-                            onClick={() => handleTypeSelect(type.value)}
-                        >
-                            {type.label}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
-
-// Transactions table component
-function TransactionsTable({ transactions, categories, onTransactionUpdate }) {
-    const [expandedCategories, setExpandedCategories] = useState(new Set());
-    const [viewMode, setViewMode] = useState('categories'); // 'categories' or 'table'
-
-    if (transactions.length === 0) {
-        return (
-            <div className="empty-state">
-                <Calendar size={48} />
-                <h3>No transactions found</h3>
-                <p>Upload a CSV file or import from Monzo to see transactions for this month</p>
-            </div>
-        );
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error confirming Monzo account:', error);
+            throw error;
+        }
     }
-
-    // Считаем общие суммы
-    const totals = transactions.reduce((acc, transaction) => {
-        const amount = Math.abs(parseFloat(transaction.amount));
-        if (transaction.type === 'INCOME') {
-            acc.income += amount;
-        } else if (transaction.type === 'OUTCOME') {
-            acc.outcome += amount;
-        }
-        return acc;
-    }, { income: 0, outcome: 0 });
-
-    // Группируем транзакции по категориям
-    const transactionsByCategory = transactions.reduce((acc, transaction) => {
-        // Используем categoryId или 'uncategorized' если его нет
-        const categoryId = transaction.categoryId ? String(transaction.categoryId) : 'uncategorized';
-
-        if (!acc[categoryId]) {
-            acc[categoryId] = {
-                transactions: [],
-                income: 0,
-                outcome: 0
-            };
-        }
-
-        acc[categoryId].transactions.push(transaction);
-
-        // Считаем суммы только для известных типов
-        const amount = Math.abs(parseFloat(transaction.amount));
-        if (transaction.type === 'INCOME') {
-            acc[categoryId].income += amount;
-        } else if (transaction.type === 'OUTCOME') {
-            acc[categoryId].outcome += amount;
-        }
-
-        return acc;
-    }, {});
-
-    const toggleCategory = (categoryId) => {
-        const newExpanded = new Set(expandedCategories);
-        if (newExpanded.has(categoryId)) {
-            newExpanded.delete(categoryId);
-        } else {
-            newExpanded.add(categoryId);
-        }
-        setExpandedCategories(newExpanded);
-    };
-
-    const formatDate = (dateString) => {
-        if (!dateString) return 'Invalid Date';
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Invalid Date';
-        const day = date.getDate();
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        const month = months[date.getMonth()];
-        return `${day}\u00A0${month}`; // Используем неразрывный пробел
-    };
-
-    const formatAmount = (amount, type) => {
-        const value = Math.abs(parseFloat(amount)); // Используем Math.abs чтобы убрать возможный минус из значения
-        const formatted = value.toFixed(2);
-
-        if (type === 'INCOME') {
-            return `+${formatted}`;
-        } else if (type === 'OUTCOME') {
-            return `-${formatted}`;
-        } else {
-            // Для unknown типа - без знака
-            return formatted;
-        }
-    };
-
-    const getCategoryName = (categoryId) => {
-        if (categoryId === 'uncategorized') return 'Uncategorized';
-
-        // Пробуем найти категорию, преобразуя categoryId в число
-        const category = categories.find(c => c.id === parseInt(categoryId) || c.id === categoryId);
-
-        if (category) {
-            return category.name;
-        }
-
-        // Если не нашли, возвращаем дефолтное имя
-        return `Category ${categoryId}`;
-    };
-
-    return (
-        <div>
-            {/* Общая статистика за месяц */}
-            <div className="month-summary">
-                <div className="summary-card">
-                    <h4>Total Income</h4>
-                    <span className="summary-income">+{totals.income.toFixed(2)}</span>
-                </div>
-                <div className="summary-card">
-                    <h4>Total Expenses</h4>
-                    <span className="summary-outcome">-{totals.outcome.toFixed(2)}</span>
-                </div>
-                <div className="summary-card">
-                    <h4>Balance</h4>
-                    <span className={totals.income - totals.outcome >= 0 ? 'summary-income' : 'summary-outcome'}>
-                        {(totals.income - totals.outcome).toFixed(2)}
-                    </span>
-                </div>
-            </div>
-
-            {/* Вкладки */}
-            <div className="view-tabs">
-                <button
-                    className={`tab-button ${viewMode === 'categories' ? 'active' : ''}`}
-                    onClick={() => setViewMode('categories')}
-                >
-                    By Categories
-                </button>
-                <button
-                    className={`tab-button ${viewMode === 'table' ? 'active' : ''}`}
-                    onClick={() => setViewMode('table')}
-                >
-                    Table View
-                </button>
-            </div>
-
-            {/* Отображение по категориям */}
-            {viewMode === 'categories' && (
-                <div className="categories-container">
-                    {Object.entries(transactionsByCategory)
-                        .sort(([, a], [, b]) => b.outcome - a.outcome) // Сортируем по убыванию расходов
-                        .map(([categoryId, data]) => (
-                            <div key={categoryId} className="category-section">
-                                <div
-                                    className="category-header"
-                                    onClick={() => toggleCategory(categoryId)}
-                                >
-                                    <div className="category-title">
-                                        <ChevronRight
-                                            size={20}
-                                            className={`chevron ${expandedCategories.has(categoryId) ? 'expanded' : ''}`}
-                                        />
-                                        <h3>{getCategoryName(categoryId)}</h3>
-                                        <span className="transaction-count">({data.transactions.length})</span>
-                                    </div>
-                                    <div className="category-summary">
-                                        {data.income > 0 && (
-                                            <span className="summary-income">Income: +{data.income.toFixed(2)}</span>
-                                        )}
-                                        {data.outcome > 0 && (
-                                            <span className="summary-outcome">Expenses: -{data.outcome.toFixed(2)}</span>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {expandedCategories.has(categoryId) && (
-                                    <div className="category-transactions">
-                                        <table>
-                                            <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Description</th>
-                                                <th>Amount</th>
-                                                <th>Type</th>
-                                                <th>Category</th>
-                                                <th>Bank</th>
-                                                <th>User</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {data.transactions
-                                                .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
-                                                .map(transaction => (
-                                                    <tr key={transaction.id}>
-                                                        <td>{formatDate(transaction.transactionDate)}</td>
-                                                        <td>{transaction.description}</td>
-                                                        <td className={`amount ${transaction.type?.toLowerCase()}`}>
-                                                            {formatAmount(transaction.amount, transaction.type)}
-                                                        </td>
-                                                        <td>
-                                                            <TransactionTypeDropdown
-                                                                transaction={transaction}
-                                                                onUpdate={onTransactionUpdate}
-                                                            />
-                                                        </td>
-                                                        <td>
-                                                            <CategoryDropdown
-                                                                transaction={transaction}
-                                                                categories={categories}
-                                                                onUpdate={onTransactionUpdate}
-                                                            />
-                                                        </td>
-                                                        <td>{transaction.bankName || 'Unknown'}</td>
-                                                        <td>{transaction.userName || '-'}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                </div>
-            )}
-
-            {/* Табличное отображение */}
-            {viewMode === 'table' && (
-                <div className="table-wrapper">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Bank</th>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Type</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>External ID</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {transactions.map(transaction => (
-                            <tr key={transaction.id}>
-                                <td>{transaction.userName || '-'}</td>
-                                <td>{transaction.bankName || 'Unknown'}</td>
-                                <td>{formatDate(transaction.transactionDate)}</td>
-                                <td className={`amount ${transaction.type?.toLowerCase()}`}>
-                                    {formatAmount(transaction.amount, transaction.type)}
-                                </td>
-                                <td>
-                                    <TransactionTypeDropdown
-                                        transaction={transaction}
-                                        onUpdate={onTransactionUpdate}
-                                    />
-                                </td>
-                                <td>
-                                    <CategoryDropdown
-                                        transaction={transaction}
-                                        categories={categories}
-                                        onUpdate={onTransactionUpdate}
-                                    />
-                                </td>
-                                <td>{transaction.description}</td>
-                                <td className="external-id">{transaction.externalId || '-'}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// Upload section component
-function UploadSection({ banks, users, onUpload, onMonzoImport }) {
-    const [selectedBank, setSelectedBank] = useState('');
-    const [selectedUser, setSelectedUser] = useState('');
-    const [file, setFile] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-    const [isImportingMonzo, setIsImportingMonzo] = useState(false);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!selectedBank || !selectedUser || !file) return;
-
-        setIsUploading(true);
-        try {
-            await onUpload(selectedBank, selectedUser, file);
-            // Reset form
-            setSelectedBank('');
-            setSelectedUser('');
-            setFile(null);
-            e.target.reset();
-        } catch (error) {
-            console.error('Upload failed:', error);
-        } finally {
-            setIsUploading(false);
-        }
-    };
-
-    const handleMonzoImport = async () => {
-        setIsImportingMonzo(true);
-        try {
-            await onMonzoImport();
-        } catch (error) {
-            console.error('Monzo import failed:', error);
-        } finally {
-            setIsImportingMonzo(false);
-        }
-    };
-
-    return (
-        <div className="upload-section">
-            <h2>
-                <Upload size={24} />
-                Upload Transactions
-            </h2>
-            <form onSubmit={handleSubmit}>
-                <div className="upload-controls">
-                    <div className="form-group">
-                        <label htmlFor="user">User</label>
-                        <select
-                            id="user"
-                            value={selectedUser}
-                            onChange={(e) => setSelectedUser(e.target.value)}
-                            required
-                        >
-                            <option value="">Select a user</option>
-                            {Array.isArray(users) && users.map(user => (
-                                <option key={user.id} value={user.id}>
-                                    {user.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="bank">Bank</label>
-                        <select
-                            id="bank"
-                            value={selectedBank}
-                            onChange={(e) => setSelectedBank(e.target.value)}
-                            required
-                        >
-                            <option value="">Select a bank</option>
-                            {Array.isArray(banks) && banks.map(bank => (
-                                <option key={bank.id} value={bank.id}>
-                                    {bank.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="file">CSV File</label>
-                        <input
-                            id="file"
-                            type="file"
-                            accept=".csv"
-                            onChange={(e) => setFile(e.target.files[0])}
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="upload-btn"
-                        disabled={isUploading || !selectedBank || !selectedUser || !file}
-                    >
-                        {isUploading ? 'Uploading...' : 'Upload CSV'}
-                    </button>
-                </div>
-            </form>
-            <div className="monzo-section">
-                <button
-                    onClick={handleMonzoImport}
-                    className="monzo-btn"
-                    disabled={isImportingMonzo}
-                >
-                    <Download size={20} />
-                    {isImportingMonzo ? 'Importing from Monzo...' : 'Import from Monzo'}
-                </button>
-            </div>
-        </div>
-    );
-}
+};
 
 // Main App component
 function App() {
@@ -699,6 +226,8 @@ function App() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
+    const [showMonzoAuthModal, setShowMonzoAuthModal] = useState(false);
+    const [pendingMonzoImport, setPendingMonzoImport] = useState(null);
 
     // Load initial data
     useEffect(() => {
@@ -709,10 +238,10 @@ function App() {
                     API.getUsers(),
                     API.getCategories()
                 ]);
-                // Extract arrays from response objects
+                console.log('Banks data from API:', banksData);
+                console.log('Users data from API:', usersData);
                 setBanks(banksData.banks || []);
                 setUsers(usersData.users || []);
-                // Handle both possible formats for categories
                 setCategories(categoriesData.categories || categoriesData.category || []);
             } catch (err) {
                 setError('Failed to load initial data');
@@ -745,22 +274,81 @@ function App() {
         loadTransactions();
     }, [currentDate]);
 
+    // Handle Monzo callback from URL
+    useEffect(() => {
+        const processMonzoCallback = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+
+            if (code && state) {
+                try {
+                    // Clean URL immediately
+                    window.history.replaceState({}, document.title, window.location.pathname);
+
+                    // Show loading state
+                    setError(null);
+                    setSuccess(null);
+
+                    // Call backend MonzoCallback
+                    console.log('Calling Monzo callback with code and state...');
+                    const callbackResult = await API.callMonzoCallback(code, state);
+
+                    if (callbackResult.success) {
+                        // Get stored import parameters
+                        const storedParams = sessionStorage.getItem('pendingMonzoImport');
+                        if (storedParams) {
+                            setPendingMonzoImport(JSON.parse(storedParams));
+                        }
+
+                        // Show auth modal
+                        setShowMonzoAuthModal(true);
+                    } else {
+                        setError('Failed to process Monzo authorization');
+                    }
+                } catch (error) {
+                    console.error('Error processing Monzo callback:', error);
+                    setError('Failed to process Monzo authorization: ' + error.message);
+                }
+            }
+        };
+
+        processMonzoCallback();
+    }, []);
+
     const handleUpload = async (bankId, userId, file) => {
         setError(null);
         setSuccess(null);
         try {
             const result = await API.uploadCSV(bankId, userId, file);
-            setSuccess(`Successfully uploaded ${result.count || 0} transactions`);
 
-            // Reload transactions for current month
-            const data = await API.getTransactions(
-                currentDate.getMonth() + 1,
-                currentDate.getFullYear()
-            );
-            setTransactions(data.transactions || []);
+            // Check for errors in response
+            if (result.record_error && result.record_error.length > 0) {
+                const errorCount = result.record_error.length;
+                const firstErrors = result.record_error.slice(0, 3);
+                const errorMessages = firstErrors.map(e =>
+                    `Row ${e.row_id}: ${e.errors.join(', ')}`
+                ).join('; ');
+
+                setError(`Upload completed with ${errorCount} errors. ${errorMessages}${errorCount > 3 ? '...' : ''}`);
+            } else if (result.success) {
+                setSuccess('Successfully uploaded transactions');
+            } else {
+                setError('Upload failed');
+            }
         } catch (err) {
-            setError('Failed to upload CSV file');
-            throw err;
+            setError('Failed to upload CSV file: ' + err.message);
+        } finally {
+            // ALWAYS reload transactions for current month
+            try {
+                const data = await API.getTransactions(
+                    currentDate.getMonth() + 1,
+                    currentDate.getFullYear()
+                );
+                setTransactions(data.transactions || []);
+            } catch (reloadError) {
+                console.error('Error reloading transactions:', reloadError);
+            }
         }
     };
 
@@ -768,7 +356,6 @@ function App() {
         try {
             const result = await API.updateTransaction(transactionId, updates);
 
-            // Update local state
             setTransactions(prev => prev.map(t => {
                 if (t.id === transactionId) {
                     const updated = { ...t };
@@ -789,28 +376,30 @@ function App() {
         }
     };
 
-    const handleMonzoImport = async () => {
+    const handleMonzoImport = async (bankId, userId) => {
         setError(null);
         setSuccess(null);
         try {
-            console.log('Starting Monzo import...');
-            // Передаем текущий выбранный месяц и год
-            const month = currentDate.getMonth() + 1; // +1 так как getMonth() возвращает 0-11
+            console.log('Starting Monzo import with params:', { bankId, userId });
+            const month = currentDate.getMonth() + 1;
             const year = currentDate.getFullYear();
 
-            const result = await API.loadMonzoTransactions(month, year);
+            const result = await API.loadMonzoTransactions(month, year, userId, bankId);
 
             if (result.needsAuth) {
                 console.log('Need auth, getting auth URL...');
-                // Пользователь не авторизован, получаем URL для авторизации
                 const authData = await API.getMonzoAuthURL();
 
-                // Проверяем разные возможные форматы ответа
                 const authUrl = authData.authUrl || authData.auth_url || authData.url;
                 console.log('Auth URL to redirect:', authUrl);
 
                 if (authUrl) {
-                    // Перенаправляем на страницу авторизации Monzo
+                    sessionStorage.setItem('pendingMonzoImport', JSON.stringify({
+                        bankId,
+                        userId,
+                        month,
+                        year
+                    }));
                     window.location.href = authUrl;
                 } else {
                     console.error('No auth URL found in response:', authData);
@@ -819,43 +408,95 @@ function App() {
                 return;
             }
 
-            // Проверяем, есть ли транзакции в ответе
-            if (!result.transactions || result.transactions.length === 0) {
-                setSuccess('No transactions found in Monzo');
-                return;
+            // New response format - only success boolean
+            if (result.success) {
+                console.log('Monzo transactions imported successfully');
+                setSuccess('Successfully imported transactions from Monzo');
+            } else {
+                setError('Failed to import transactions from Monzo');
             }
-
-            // Успешно загрузили транзакции
-            console.log('Transactions loaded successfully:', result.transactions.length);
-            setSuccess(`Successfully imported ${result.transactions.length} transactions from Monzo`);
-
-            // Reload transactions for current month
-            const data = await API.getTransactions(
-                currentDate.getMonth() + 1,
-                currentDate.getFullYear()
-            );
-            setTransactions(data.transactions || []);
         } catch (err) {
             console.error('Monzo import error:', err);
             setError('Failed to import from Monzo: ' + err.message);
+        } finally {
+            // ALWAYS reload transactions for current view
+            try {
+                const data = await API.getTransactions(
+                    currentDate.getMonth() + 1,
+                    currentDate.getFullYear()
+                );
+                setTransactions(data.transactions || []);
+            } catch (reloadError) {
+                console.error('Error reloading transactions:', reloadError);
+            }
         }
     };
 
-    // Check if we returned from Monzo auth
-    useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const state = urlParams.get('state');
+    const handleMonzoAuthConfirm = async () => {
+        try {
+            console.log('Confirming Monzo account access...');
+            const accountResult = await API.confirmMonzoAccount();
 
-        if (code && state) {
-            // We returned from Monzo auth, clear the URL
-            window.history.replaceState({}, document.title, window.location.pathname);
+            if (!accountResult.success) {
+                return false;
+            }
 
-            // Try to load Monzo transactions again
-            setSuccess('Successfully authorized with Monzo. Loading transactions...');
-            handleMonzoImport();
+            console.log('Monzo account confirmed successfully');
+
+            // Close modal
+            setShowMonzoAuthModal(false);
+
+            // Now load transactions with stored parameters
+            if (pendingMonzoImport) {
+                const { bankId, userId, month, year } = pendingMonzoImport;
+
+                try {
+                    const result = await API.loadMonzoTransactions(
+                        month || currentDate.getMonth() + 1,
+                        year || currentDate.getFullYear(),
+                        userId,
+                        bankId
+                    );
+
+                    // New response format - only success boolean
+                    if (result.success) {
+                        setSuccess('Successfully imported transactions from Monzo');
+                    } else {
+                        setError('Failed to import transactions from Monzo');
+                    }
+                } catch (importError) {
+                    console.error('Error importing Monzo transactions:', importError);
+                    setError('Connected to Monzo successfully, but failed to import transactions: ' + importError.message);
+                } finally {
+                    // ALWAYS reload transactions for current view, regardless of import result
+                    try {
+                        const data = await API.getTransactions(
+                            currentDate.getMonth() + 1,
+                            currentDate.getFullYear()
+                        );
+                        setTransactions(data.transactions || []);
+                    } catch (reloadError) {
+                        console.error('Error reloading transactions:', reloadError);
+                    }
+                }
+
+                // Clear stored parameters
+                setPendingMonzoImport(null);
+                sessionStorage.removeItem('pendingMonzoImport');
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error confirming Monzo account:', error);
+            throw error;
         }
-    }, [currentDate]); // Добавляем currentDate в зависимости
+    };
+
+    const handleMonzoAuthClose = () => {
+        setShowMonzoAuthModal(false);
+        setPendingMonzoImport(null);
+        sessionStorage.removeItem('pendingMonzoImport');
+    };
 
     return (
         <div className="container">
@@ -885,29 +526,29 @@ function App() {
                 </div>
             )}
 
-            <UploadSection
+            <UploadTransactions
                 banks={banks}
                 users={users}
                 onUpload={handleUpload}
                 onMonzoImport={handleMonzoImport}
             />
 
-            <MonthNavigation
+            <TransactionsList
                 currentDate={currentDate}
                 onDateChange={setCurrentDate}
+                transactions={transactions}
+                categories={categories}
+                onTransactionUpdate={handleTransactionUpdate}
+                loading={loading}
             />
 
-            <div className="transactions-section">
-                {loading ? (
-                    <div className="loading">Loading transactions...</div>
-                ) : (
-                    <TransactionsTable
-                        transactions={transactions}
-                        categories={categories}
-                        onTransactionUpdate={handleTransactionUpdate}
-                    />
-                )}
-            </div>
+            {showMonzoAuthModal && (
+                <MonzoAuthModal
+                    onConfirm={handleMonzoAuthConfirm}
+                    onClose={handleMonzoAuthClose}
+                    error={null}
+                />
+            )}
         </div>
     );
 }

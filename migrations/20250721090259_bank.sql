@@ -9,7 +9,7 @@ CREATE TABLE bank_header (
      id SERIAL PRIMARY KEY,
      bank_id INT  NOT NULL,
      name VARCHAR(50) NOT NULL,
-     target_field TEXT[] NOT NULL,
+     target_field VARCHAR(50) NOT NULL,
      UNIQUE(bank_id, name, target_field)
 );
 

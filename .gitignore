@@ -6,3 +6,4 @@
 /config/.env_local
 /config/values_local.yaml
 
+.DS_Store

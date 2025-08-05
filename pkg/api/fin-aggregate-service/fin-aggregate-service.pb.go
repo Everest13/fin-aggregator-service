@@ -73,6 +73,55 @@ func (TransactionType) EnumDescriptor() ([]byte, []int) {
 	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{0}
 }
 
+type BankImportMethod int32
+
+const (
+	BankImportMethod_UNDEFINED BankImportMethod = 0
+	BankImportMethod_CSV       BankImportMethod = 1
+	BankImportMethod_API       BankImportMethod = 2
+)
+
+// Enum value maps for BankImportMethod.
+var (
+	BankImportMethod_name = map[int32]string{
+		0: "UNDEFINED",
+		1: "CSV",
+		2: "API",
+	}
+	BankImportMethod_value = map[string]int32{
+		"UNDEFINED": 0,
+		"CSV":       1,
+		"API":       2,
+	}
+)
+
+func (x BankImportMethod) Enum() *BankImportMethod {
+	p := new(BankImportMethod)
+	*p = x
+	return p
+}
+
+func (x BankImportMethod) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BankImportMethod) Descriptor() protoreflect.EnumDescriptor {
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_enumTypes[1].Descriptor()
+}
+
+func (BankImportMethod) Type() protoreflect.EnumType {
+	return &file_api_fin_aggregate_service_fin_aggregate_service_proto_enumTypes[1]
+}
+
+func (x BankImportMethod) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BankImportMethod.Descriptor instead.
+func (BankImportMethod) EnumDescriptor() ([]byte, []int) {
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{1}
+}
+
 type Transaction struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Id              int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -549,6 +598,86 @@ func (x *MonzoCallbackResponse) GetSuccess() bool {
 	return false
 }
 
+type MonzoAccountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MonzoAccountRequest) Reset() {
+	*x = MonzoAccountRequest{}
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MonzoAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MonzoAccountRequest) ProtoMessage() {}
+
+func (x *MonzoAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MonzoAccountRequest.ProtoReflect.Descriptor instead.
+func (*MonzoAccountRequest) Descriptor() ([]byte, []int) {
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{7}
+}
+
+type MonzoAccountResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MonzoAccountResponse) Reset() {
+	*x = MonzoAccountResponse{}
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MonzoAccountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MonzoAccountResponse) ProtoMessage() {}
+
+func (x *MonzoAccountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MonzoAccountResponse.ProtoReflect.Descriptor instead.
+func (*MonzoAccountResponse) Descriptor() ([]byte, []int) {
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *MonzoAccountResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
 type GetMonzoAuthURLRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -557,7 +686,7 @@ type GetMonzoAuthURLRequest struct {
 
 func (x *GetMonzoAuthURLRequest) Reset() {
 	*x = GetMonzoAuthURLRequest{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[7]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -569,7 +698,7 @@ func (x *GetMonzoAuthURLRequest) String() string {
 func (*GetMonzoAuthURLRequest) ProtoMessage() {}
 
 func (x *GetMonzoAuthURLRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[7]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -582,7 +711,7 @@ func (x *GetMonzoAuthURLRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMonzoAuthURLRequest.ProtoReflect.Descriptor instead.
 func (*GetMonzoAuthURLRequest) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{7}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{9}
 }
 
 type GetMonzoAuthURLResponse struct {
@@ -594,7 +723,7 @@ type GetMonzoAuthURLResponse struct {
 
 func (x *GetMonzoAuthURLResponse) Reset() {
 	*x = GetMonzoAuthURLResponse{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[8]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -606,7 +735,7 @@ func (x *GetMonzoAuthURLResponse) String() string {
 func (*GetMonzoAuthURLResponse) ProtoMessage() {}
 
 func (x *GetMonzoAuthURLResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[8]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -619,7 +748,7 @@ func (x *GetMonzoAuthURLResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMonzoAuthURLResponse.ProtoReflect.Descriptor instead.
 func (*GetMonzoAuthURLResponse) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{8}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetMonzoAuthURLResponse) GetAuthUrl() string {
@@ -633,13 +762,15 @@ type LoadMonzoTransactionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Since         *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=since,proto3" json:"since,omitempty"`
 	Before        *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=before,proto3" json:"before,omitempty"`
+	UserId        int64                  `protobuf:"varint,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	BankId        int64                  `protobuf:"varint,4,opt,name=bank_id,json=bankId,proto3" json:"bank_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LoadMonzoTransactionsRequest) Reset() {
 	*x = LoadMonzoTransactionsRequest{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[9]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -651,7 +782,7 @@ func (x *LoadMonzoTransactionsRequest) String() string {
 func (*LoadMonzoTransactionsRequest) ProtoMessage() {}
 
 func (x *LoadMonzoTransactionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[9]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -664,7 +795,7 @@ func (x *LoadMonzoTransactionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadMonzoTransactionsRequest.ProtoReflect.Descriptor instead.
 func (*LoadMonzoTransactionsRequest) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{9}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *LoadMonzoTransactionsRequest) GetSince() *timestamppb.Timestamp {
@@ -681,16 +812,30 @@ func (x *LoadMonzoTransactionsRequest) GetBefore() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *LoadMonzoTransactionsRequest) GetUserId() int64 {
+	if x != nil {
+		return x.UserId
+	}
+	return 0
+}
+
+func (x *LoadMonzoTransactionsRequest) GetBankId() int64 {
+	if x != nil {
+		return x.BankId
+	}
+	return 0
+}
+
 type LoadMonzoTransactionsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Transactions  []*Transaction         `protobuf:"bytes,1,rep,name=transactions,proto3" json:"transactions,omitempty"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LoadMonzoTransactionsResponse) Reset() {
 	*x = LoadMonzoTransactionsResponse{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[10]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -702,7 +847,7 @@ func (x *LoadMonzoTransactionsResponse) String() string {
 func (*LoadMonzoTransactionsResponse) ProtoMessage() {}
 
 func (x *LoadMonzoTransactionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[10]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -715,14 +860,14 @@ func (x *LoadMonzoTransactionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoadMonzoTransactionsResponse.ProtoReflect.Descriptor instead.
 func (*LoadMonzoTransactionsResponse) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{10}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{12}
 }
 
-func (x *LoadMonzoTransactionsResponse) GetTransactions() []*Transaction {
+func (x *LoadMonzoTransactionsResponse) GetSuccess() bool {
 	if x != nil {
-		return x.Transactions
+		return x.Success
 	}
-	return nil
+	return false
 }
 
 type UploadCSVRequest struct {
@@ -737,7 +882,7 @@ type UploadCSVRequest struct {
 
 func (x *UploadCSVRequest) Reset() {
 	*x = UploadCSVRequest{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[11]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -749,7 +894,7 @@ func (x *UploadCSVRequest) String() string {
 func (*UploadCSVRequest) ProtoMessage() {}
 
 func (x *UploadCSVRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[11]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -762,7 +907,7 @@ func (x *UploadCSVRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadCSVRequest.ProtoReflect.Descriptor instead.
 func (*UploadCSVRequest) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{11}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UploadCSVRequest) GetCsvData() []byte {
@@ -803,7 +948,7 @@ type UploadCSVResponse struct {
 
 func (x *UploadCSVResponse) Reset() {
 	*x = UploadCSVResponse{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[12]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -815,7 +960,7 @@ func (x *UploadCSVResponse) String() string {
 func (*UploadCSVResponse) ProtoMessage() {}
 
 func (x *UploadCSVResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[12]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -828,7 +973,7 @@ func (x *UploadCSVResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadCSVResponse.ProtoReflect.Descriptor instead.
 func (*UploadCSVResponse) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{12}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *UploadCSVResponse) GetSuccess() bool {
@@ -855,7 +1000,7 @@ type RecordError struct {
 
 func (x *RecordError) Reset() {
 	*x = RecordError{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[13]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -867,7 +1012,7 @@ func (x *RecordError) String() string {
 func (*RecordError) ProtoMessage() {}
 
 func (x *RecordError) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[13]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -880,7 +1025,7 @@ func (x *RecordError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecordError.ProtoReflect.Descriptor instead.
 func (*RecordError) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{13}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *RecordError) GetRowId() int64 {
@@ -905,7 +1050,7 @@ type ListBankRequest struct {
 
 func (x *ListBankRequest) Reset() {
 	*x = ListBankRequest{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[14]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -917,7 +1062,7 @@ func (x *ListBankRequest) String() string {
 func (*ListBankRequest) ProtoMessage() {}
 
 func (x *ListBankRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[14]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -930,7 +1075,7 @@ func (x *ListBankRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBankRequest.ProtoReflect.Descriptor instead.
 func (*ListBankRequest) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{14}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{16}
 }
 
 type ListBankResponse struct {
@@ -942,7 +1087,7 @@ type ListBankResponse struct {
 
 func (x *ListBankResponse) Reset() {
 	*x = ListBankResponse{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[15]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -954,7 +1099,7 @@ func (x *ListBankResponse) String() string {
 func (*ListBankResponse) ProtoMessage() {}
 
 func (x *ListBankResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[15]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -967,7 +1112,7 @@ func (x *ListBankResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBankResponse.ProtoReflect.Descriptor instead.
 func (*ListBankResponse) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{15}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListBankResponse) GetBanks() []*Bank {
@@ -981,13 +1126,14 @@ type Bank struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	ImportMethod  BankImportMethod       `protobuf:"varint,3,opt,name=import_method,json=importMethod,proto3,enum=fin_aggregator_service.BankImportMethod" json:"import_method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Bank) Reset() {
 	*x = Bank{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[16]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -999,7 +1145,7 @@ func (x *Bank) String() string {
 func (*Bank) ProtoMessage() {}
 
 func (x *Bank) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[16]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1012,7 +1158,7 @@ func (x *Bank) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Bank.ProtoReflect.Descriptor instead.
 func (*Bank) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{16}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *Bank) GetId() int64 {
@@ -1029,6 +1175,13 @@ func (x *Bank) GetName() string {
 	return ""
 }
 
+func (x *Bank) GetImportMethod() BankImportMethod {
+	if x != nil {
+		return x.ImportMethod
+	}
+	return BankImportMethod_UNDEFINED
+}
+
 type ListUserRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1037,7 +1190,7 @@ type ListUserRequest struct {
 
 func (x *ListUserRequest) Reset() {
 	*x = ListUserRequest{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[17]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1049,7 +1202,7 @@ func (x *ListUserRequest) String() string {
 func (*ListUserRequest) ProtoMessage() {}
 
 func (x *ListUserRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[17]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1062,7 +1215,7 @@ func (x *ListUserRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUserRequest.ProtoReflect.Descriptor instead.
 func (*ListUserRequest) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{17}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{19}
 }
 
 type ListUserResponse struct {
@@ -1074,7 +1227,7 @@ type ListUserResponse struct {
 
 func (x *ListUserResponse) Reset() {
 	*x = ListUserResponse{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[18]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1086,7 +1239,7 @@ func (x *ListUserResponse) String() string {
 func (*ListUserResponse) ProtoMessage() {}
 
 func (x *ListUserResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[18]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1099,7 +1252,7 @@ func (x *ListUserResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListUserResponse.ProtoReflect.Descriptor instead.
 func (*ListUserResponse) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{18}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListUserResponse) GetUsers() []*User {
@@ -1113,13 +1266,14 @@ type User struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Banks         []int64                `protobuf:"varint,3,rep,packed,name=banks,proto3" json:"banks,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[19]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1131,7 +1285,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[19]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1144,7 +1298,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{19}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *User) GetId() int64 {
@@ -1161,6 +1315,13 @@ func (x *User) GetName() string {
 	return ""
 }
 
+func (x *User) GetBanks() []int64 {
+	if x != nil {
+		return x.Banks
+	}
+	return nil
+}
+
 type ListCategoryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -1169,7 +1330,7 @@ type ListCategoryRequest struct {
 
 func (x *ListCategoryRequest) Reset() {
 	*x = ListCategoryRequest{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[20]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1181,7 +1342,7 @@ func (x *ListCategoryRequest) String() string {
 func (*ListCategoryRequest) ProtoMessage() {}
 
 func (x *ListCategoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[20]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1194,7 +1355,7 @@ func (x *ListCategoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCategoryRequest.ProtoReflect.Descriptor instead.
 func (*ListCategoryRequest) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{20}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{22}
 }
 
 type ListCategoryResponse struct {
@@ -1206,7 +1367,7 @@ type ListCategoryResponse struct {
 
 func (x *ListCategoryResponse) Reset() {
 	*x = ListCategoryResponse{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[21]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1218,7 +1379,7 @@ func (x *ListCategoryResponse) String() string {
 func (*ListCategoryResponse) ProtoMessage() {}
 
 func (x *ListCategoryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[21]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1231,7 +1392,7 @@ func (x *ListCategoryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCategoryResponse.ProtoReflect.Descriptor instead.
 func (*ListCategoryResponse) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{21}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListCategoryResponse) GetCategory() []*Category {
@@ -1251,7 +1412,7 @@ type Category struct {
 
 func (x *Category) Reset() {
 	*x = Category{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[22]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1263,7 +1424,7 @@ func (x *Category) String() string {
 func (*Category) ProtoMessage() {}
 
 func (x *Category) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[22]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1276,7 +1437,7 @@ func (x *Category) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Category.ProtoReflect.Descriptor instead.
 func (*Category) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{22}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *Category) GetId() int64 {
@@ -1301,7 +1462,7 @@ type ListTransactionTypeRequest struct {
 
 func (x *ListTransactionTypeRequest) Reset() {
 	*x = ListTransactionTypeRequest{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[23]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1313,7 +1474,7 @@ func (x *ListTransactionTypeRequest) String() string {
 func (*ListTransactionTypeRequest) ProtoMessage() {}
 
 func (x *ListTransactionTypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[23]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1326,7 +1487,7 @@ func (x *ListTransactionTypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTransactionTypeRequest.ProtoReflect.Descriptor instead.
 func (*ListTransactionTypeRequest) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{23}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{25}
 }
 
 type ListTransactionTypeResponse struct {
@@ -1338,7 +1499,7 @@ type ListTransactionTypeResponse struct {
 
 func (x *ListTransactionTypeResponse) Reset() {
 	*x = ListTransactionTypeResponse{}
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[24]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1350,7 +1511,7 @@ func (x *ListTransactionTypeResponse) String() string {
 func (*ListTransactionTypeResponse) ProtoMessage() {}
 
 func (x *ListTransactionTypeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[24]
+	mi := &file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1363,7 +1524,7 @@ func (x *ListTransactionTypeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListTransactionTypeResponse.ProtoReflect.Descriptor instead.
 func (*ListTransactionTypeResponse) Descriptor() ([]byte, []int) {
-	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{24}
+	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListTransactionTypeResponse) GetType() []TransactionType {
@@ -1420,15 +1581,20 @@ const file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc = "" +
 	"\x04code\x18\x01 \x01(\tR\x04code\x12\x14\n" +
 	"\x05state\x18\x02 \x01(\tR\x05state\"1\n" +
 	"\x15MonzoCallbackResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x15\n" +
+	"\x13MonzoAccountRequest\"0\n" +
+	"\x14MonzoAccountResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x18\n" +
 	"\x16GetMonzoAuthURLRequest\"4\n" +
 	"\x17GetMonzoAuthURLResponse\x12\x19\n" +
-	"\bauth_url\x18\x01 \x01(\tR\aauthUrl\"\x84\x01\n" +
+	"\bauth_url\x18\x01 \x01(\tR\aauthUrl\"\xb6\x01\n" +
 	"\x1cLoadMonzoTransactionsRequest\x120\n" +
 	"\x05since\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x05since\x122\n" +
-	"\x06before\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x06before\"h\n" +
-	"\x1dLoadMonzoTransactionsResponse\x12G\n" +
-	"\ftransactions\x18\x01 \x03(\v2#.fin_aggregator_service.TransactionR\ftransactions\"{\n" +
+	"\x06before\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x06before\x12\x17\n" +
+	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x17\n" +
+	"\abank_id\x18\x04 \x01(\x03R\x06bankId\"9\n" +
+	"\x1dLoadMonzoTransactionsResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"{\n" +
 	"\x10UploadCSVRequest\x12\x19\n" +
 	"\bcsv_data\x18\x01 \x01(\fR\acsvData\x12\x1a\n" +
 	"\bfilename\x18\x02 \x01(\tR\bfilename\x12\x17\n" +
@@ -1442,16 +1608,18 @@ const file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc = "" +
 	"\x06errors\x18\x02 \x03(\tR\x06errors\"\x11\n" +
 	"\x0fListBankRequest\"F\n" +
 	"\x10ListBankResponse\x122\n" +
-	"\x05banks\x18\x01 \x03(\v2\x1c.fin_aggregator_service.BankR\x05banks\"*\n" +
+	"\x05banks\x18\x01 \x03(\v2\x1c.fin_aggregator_service.BankR\x05banks\"y\n" +
 	"\x04Bank\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\x11\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12M\n" +
+	"\rimport_method\x18\x03 \x01(\x0e2(.fin_aggregator_service.BankImportMethodR\fimportMethod\"\x11\n" +
 	"\x0fListUserRequest\"F\n" +
 	"\x10ListUserResponse\x122\n" +
-	"\x05users\x18\x01 \x03(\v2\x1c.fin_aggregator_service.UserR\x05users\"*\n" +
+	"\x05users\x18\x01 \x03(\v2\x1c.fin_aggregator_service.UserR\x05users\"@\n" +
 	"\x04User\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\x15\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x14\n" +
+	"\x05banks\x18\x03 \x03(\x03R\x05banks\"\x15\n" +
 	"\x13ListCategoryRequest\"T\n" +
 	"\x14ListCategoryResponse\x12<\n" +
 	"\bcategory\x18\x01 \x03(\v2 .fin_aggregator_service.CategoryR\bcategory\".\n" +
@@ -1465,14 +1633,18 @@ const file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc = "" +
 	"\vUNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06INCOME\x10\x01\x12\v\n" +
-	"\aOUTCOME\x10\x022\xf7\n" +
-	"\n" +
+	"\aOUTCOME\x10\x02*3\n" +
+	"\x10BankImportMethod\x12\r\n" +
+	"\tUNDEFINED\x10\x00\x12\a\n" +
+	"\x03CSV\x10\x01\x12\a\n" +
+	"\x03API\x10\x022\xfe\v\n" +
 	"\x14FinAggregatorService\x12\x89\x01\n" +
 	"\x0fGetTransactions\x12..fin_aggregator_service.GetTransactionsRequest\x1a/.fin_aggregator_service.GetTransactionsResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/transactions\x12\xa3\x01\n" +
-	"\x11UpdateTransaction\x120.fin_aggregator_service.UpdateTransactionRequest\x1a1.fin_aggregator_service.UpdateTransactionResponse\")\x82\xd3\xe4\x93\x02#:\x01*2\x1e/transactions/{transaction_id}\x12\x85\x01\n" +
-	"\rMonzoCallback\x12,.fin_aggregator_service.MonzoCallbackRequest\x1a-.fin_aggregator_service.MonzoCallbackResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/monzo/callback\x12\xa1\x01\n" +
-	"\x15LoadMonzoTransactions\x124.fin_aggregator_service.LoadMonzoTransactionsRequest\x1a5.fin_aggregator_service.LoadMonzoTransactionsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/monzo/transactions\x12\x8b\x01\n" +
-	"\x0fGetMonzoAuthURL\x12..fin_aggregator_service.GetMonzoAuthURLRequest\x1a/.fin_aggregator_service.GetMonzoAuthURLResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/monzo/auth-url\x12x\n" +
+	"\x11UpdateTransaction\x120.fin_aggregator_service.UpdateTransactionRequest\x1a1.fin_aggregator_service.UpdateTransactionResponse\")\x82\xd3\xe4\x93\x02#:\x01*2\x1e/transactions/{transaction_id}\x12\x8b\x01\n" +
+	"\x0fGetMonzoAuthURL\x12..fin_aggregator_service.GetMonzoAuthURLRequest\x1a/.fin_aggregator_service.GetMonzoAuthURLResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/monzo/auth-url\x12\x85\x01\n" +
+	"\rMonzoCallback\x12,.fin_aggregator_service.MonzoCallbackRequest\x1a-.fin_aggregator_service.MonzoCallbackResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/monzo/callback\x12\x84\x01\n" +
+	"\x0fGetMonzoAccount\x12+.fin_aggregator_service.MonzoAccountRequest\x1a,.fin_aggregator_service.MonzoAccountResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/monzo/account\x12\xa1\x01\n" +
+	"\x15LoadMonzoTransactions\x124.fin_aggregator_service.LoadMonzoTransactionsRequest\x1a5.fin_aggregator_service.LoadMonzoTransactionsResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/monzo/transactions\x12x\n" +
 	"\tUploadCSV\x12(.fin_aggregator_service.UploadCSVRequest\x1a).fin_aggregator_service.UploadCSVResponse\"\x16\x82\xd3\xe4\x93\x02\x10:\x01*\"\v/upload-csv\x12m\n" +
 	"\bListBank\x12'.fin_aggregator_service.ListBankRequest\x1a(.fin_aggregator_service.ListBankResponse\"\x0e\x82\xd3\xe4\x93\x02\b\x12\x06/banks\x12m\n" +
 	"\bListUser\x12'.fin_aggregator_service.ListUserRequest\x1a(.fin_aggregator_service.ListUserResponse\"\x0e\x82\xd3\xe4\x93\x02\b\x12\x06/users\x12~\n" +
@@ -1491,74 +1663,79 @@ func file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescGZIP() []
 	return file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescData
 }
 
-var file_api_fin_aggregate_service_fin_aggregate_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_api_fin_aggregate_service_fin_aggregate_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_api_fin_aggregate_service_fin_aggregate_service_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_api_fin_aggregate_service_fin_aggregate_service_proto_goTypes = []any{
 	(TransactionType)(0),                  // 0: fin_aggregator_service.TransactionType
-	(*Transaction)(nil),                   // 1: fin_aggregator_service.Transaction
-	(*GetTransactionsRequest)(nil),        // 2: fin_aggregator_service.GetTransactionsRequest
-	(*GetTransactionsResponse)(nil),       // 3: fin_aggregator_service.GetTransactionsResponse
-	(*UpdateTransactionRequest)(nil),      // 4: fin_aggregator_service.UpdateTransactionRequest
-	(*UpdateTransactionResponse)(nil),     // 5: fin_aggregator_service.UpdateTransactionResponse
-	(*MonzoCallbackRequest)(nil),          // 6: fin_aggregator_service.MonzoCallbackRequest
-	(*MonzoCallbackResponse)(nil),         // 7: fin_aggregator_service.MonzoCallbackResponse
-	(*GetMonzoAuthURLRequest)(nil),        // 8: fin_aggregator_service.GetMonzoAuthURLRequest
-	(*GetMonzoAuthURLResponse)(nil),       // 9: fin_aggregator_service.GetMonzoAuthURLResponse
-	(*LoadMonzoTransactionsRequest)(nil),  // 10: fin_aggregator_service.LoadMonzoTransactionsRequest
-	(*LoadMonzoTransactionsResponse)(nil), // 11: fin_aggregator_service.LoadMonzoTransactionsResponse
-	(*UploadCSVRequest)(nil),              // 12: fin_aggregator_service.UploadCSVRequest
-	(*UploadCSVResponse)(nil),             // 13: fin_aggregator_service.UploadCSVResponse
-	(*RecordError)(nil),                   // 14: fin_aggregator_service.RecordError
-	(*ListBankRequest)(nil),               // 15: fin_aggregator_service.ListBankRequest
-	(*ListBankResponse)(nil),              // 16: fin_aggregator_service.ListBankResponse
-	(*Bank)(nil),                          // 17: fin_aggregator_service.Bank
-	(*ListUserRequest)(nil),               // 18: fin_aggregator_service.ListUserRequest
-	(*ListUserResponse)(nil),              // 19: fin_aggregator_service.ListUserResponse
-	(*User)(nil),                          // 20: fin_aggregator_service.User
-	(*ListCategoryRequest)(nil),           // 21: fin_aggregator_service.ListCategoryRequest
-	(*ListCategoryResponse)(nil),          // 22: fin_aggregator_service.ListCategoryResponse
-	(*Category)(nil),                      // 23: fin_aggregator_service.Category
-	(*ListTransactionTypeRequest)(nil),    // 24: fin_aggregator_service.ListTransactionTypeRequest
-	(*ListTransactionTypeResponse)(nil),   // 25: fin_aggregator_service.ListTransactionTypeResponse
-	(*timestamppb.Timestamp)(nil),         // 26: google.protobuf.Timestamp
+	(BankImportMethod)(0),                 // 1: fin_aggregator_service.BankImportMethod
+	(*Transaction)(nil),                   // 2: fin_aggregator_service.Transaction
+	(*GetTransactionsRequest)(nil),        // 3: fin_aggregator_service.GetTransactionsRequest
+	(*GetTransactionsResponse)(nil),       // 4: fin_aggregator_service.GetTransactionsResponse
+	(*UpdateTransactionRequest)(nil),      // 5: fin_aggregator_service.UpdateTransactionRequest
+	(*UpdateTransactionResponse)(nil),     // 6: fin_aggregator_service.UpdateTransactionResponse
+	(*MonzoCallbackRequest)(nil),          // 7: fin_aggregator_service.MonzoCallbackRequest
+	(*MonzoCallbackResponse)(nil),         // 8: fin_aggregator_service.MonzoCallbackResponse
+	(*MonzoAccountRequest)(nil),           // 9: fin_aggregator_service.MonzoAccountRequest
+	(*MonzoAccountResponse)(nil),          // 10: fin_aggregator_service.MonzoAccountResponse
+	(*GetMonzoAuthURLRequest)(nil),        // 11: fin_aggregator_service.GetMonzoAuthURLRequest
+	(*GetMonzoAuthURLResponse)(nil),       // 12: fin_aggregator_service.GetMonzoAuthURLResponse
+	(*LoadMonzoTransactionsRequest)(nil),  // 13: fin_aggregator_service.LoadMonzoTransactionsRequest
+	(*LoadMonzoTransactionsResponse)(nil), // 14: fin_aggregator_service.LoadMonzoTransactionsResponse
+	(*UploadCSVRequest)(nil),              // 15: fin_aggregator_service.UploadCSVRequest
+	(*UploadCSVResponse)(nil),             // 16: fin_aggregator_service.UploadCSVResponse
+	(*RecordError)(nil),                   // 17: fin_aggregator_service.RecordError
+	(*ListBankRequest)(nil),               // 18: fin_aggregator_service.ListBankRequest
+	(*ListBankResponse)(nil),              // 19: fin_aggregator_service.ListBankResponse
+	(*Bank)(nil),                          // 20: fin_aggregator_service.Bank
+	(*ListUserRequest)(nil),               // 21: fin_aggregator_service.ListUserRequest
+	(*ListUserResponse)(nil),              // 22: fin_aggregator_service.ListUserResponse
+	(*User)(nil),                          // 23: fin_aggregator_service.User
+	(*ListCategoryRequest)(nil),           // 24: fin_aggregator_service.ListCategoryRequest
+	(*ListCategoryResponse)(nil),          // 25: fin_aggregator_service.ListCategoryResponse
+	(*Category)(nil),                      // 26: fin_aggregator_service.Category
+	(*ListTransactionTypeRequest)(nil),    // 27: fin_aggregator_service.ListTransactionTypeRequest
+	(*ListTransactionTypeResponse)(nil),   // 28: fin_aggregator_service.ListTransactionTypeResponse
+	(*timestamppb.Timestamp)(nil),         // 29: google.protobuf.Timestamp
 }
 var file_api_fin_aggregate_service_fin_aggregate_service_proto_depIdxs = []int32{
-	26, // 0: fin_aggregator_service.Transaction.transaction_date:type_name -> google.protobuf.Timestamp
+	29, // 0: fin_aggregator_service.Transaction.transaction_date:type_name -> google.protobuf.Timestamp
 	0,  // 1: fin_aggregator_service.Transaction.type:type_name -> fin_aggregator_service.TransactionType
-	26, // 2: fin_aggregator_service.Transaction.created_at:type_name -> google.protobuf.Timestamp
-	1,  // 3: fin_aggregator_service.GetTransactionsResponse.transactions:type_name -> fin_aggregator_service.Transaction
+	29, // 2: fin_aggregator_service.Transaction.created_at:type_name -> google.protobuf.Timestamp
+	2,  // 3: fin_aggregator_service.GetTransactionsResponse.transactions:type_name -> fin_aggregator_service.Transaction
 	0,  // 4: fin_aggregator_service.UpdateTransactionRequest.type:type_name -> fin_aggregator_service.TransactionType
-	1,  // 5: fin_aggregator_service.UpdateTransactionResponse.transaction:type_name -> fin_aggregator_service.Transaction
-	26, // 6: fin_aggregator_service.LoadMonzoTransactionsRequest.since:type_name -> google.protobuf.Timestamp
-	26, // 7: fin_aggregator_service.LoadMonzoTransactionsRequest.before:type_name -> google.protobuf.Timestamp
-	1,  // 8: fin_aggregator_service.LoadMonzoTransactionsResponse.transactions:type_name -> fin_aggregator_service.Transaction
-	14, // 9: fin_aggregator_service.UploadCSVResponse.record_error:type_name -> fin_aggregator_service.RecordError
-	17, // 10: fin_aggregator_service.ListBankResponse.banks:type_name -> fin_aggregator_service.Bank
-	20, // 11: fin_aggregator_service.ListUserResponse.users:type_name -> fin_aggregator_service.User
-	23, // 12: fin_aggregator_service.ListCategoryResponse.category:type_name -> fin_aggregator_service.Category
+	2,  // 5: fin_aggregator_service.UpdateTransactionResponse.transaction:type_name -> fin_aggregator_service.Transaction
+	29, // 6: fin_aggregator_service.LoadMonzoTransactionsRequest.since:type_name -> google.protobuf.Timestamp
+	29, // 7: fin_aggregator_service.LoadMonzoTransactionsRequest.before:type_name -> google.protobuf.Timestamp
+	17, // 8: fin_aggregator_service.UploadCSVResponse.record_error:type_name -> fin_aggregator_service.RecordError
+	20, // 9: fin_aggregator_service.ListBankResponse.banks:type_name -> fin_aggregator_service.Bank
+	1,  // 10: fin_aggregator_service.Bank.import_method:type_name -> fin_aggregator_service.BankImportMethod
+	23, // 11: fin_aggregator_service.ListUserResponse.users:type_name -> fin_aggregator_service.User
+	26, // 12: fin_aggregator_service.ListCategoryResponse.category:type_name -> fin_aggregator_service.Category
 	0,  // 13: fin_aggregator_service.ListTransactionTypeResponse.type:type_name -> fin_aggregator_service.TransactionType
-	2,  // 14: fin_aggregator_service.FinAggregatorService.GetTransactions:input_type -> fin_aggregator_service.GetTransactionsRequest
-	4,  // 15: fin_aggregator_service.FinAggregatorService.UpdateTransaction:input_type -> fin_aggregator_service.UpdateTransactionRequest
-	6,  // 16: fin_aggregator_service.FinAggregatorService.MonzoCallback:input_type -> fin_aggregator_service.MonzoCallbackRequest
-	10, // 17: fin_aggregator_service.FinAggregatorService.LoadMonzoTransactions:input_type -> fin_aggregator_service.LoadMonzoTransactionsRequest
-	8,  // 18: fin_aggregator_service.FinAggregatorService.GetMonzoAuthURL:input_type -> fin_aggregator_service.GetMonzoAuthURLRequest
-	12, // 19: fin_aggregator_service.FinAggregatorService.UploadCSV:input_type -> fin_aggregator_service.UploadCSVRequest
-	15, // 20: fin_aggregator_service.FinAggregatorService.ListBank:input_type -> fin_aggregator_service.ListBankRequest
-	18, // 21: fin_aggregator_service.FinAggregatorService.ListUser:input_type -> fin_aggregator_service.ListUserRequest
-	21, // 22: fin_aggregator_service.FinAggregatorService.ListCategory:input_type -> fin_aggregator_service.ListCategoryRequest
-	24, // 23: fin_aggregator_service.FinAggregatorService.ListTransactionType:input_type -> fin_aggregator_service.ListTransactionTypeRequest
-	3,  // 24: fin_aggregator_service.FinAggregatorService.GetTransactions:output_type -> fin_aggregator_service.GetTransactionsResponse
-	5,  // 25: fin_aggregator_service.FinAggregatorService.UpdateTransaction:output_type -> fin_aggregator_service.UpdateTransactionResponse
-	7,  // 26: fin_aggregator_service.FinAggregatorService.MonzoCallback:output_type -> fin_aggregator_service.MonzoCallbackResponse
-	11, // 27: fin_aggregator_service.FinAggregatorService.LoadMonzoTransactions:output_type -> fin_aggregator_service.LoadMonzoTransactionsResponse
-	9,  // 28: fin_aggregator_service.FinAggregatorService.GetMonzoAuthURL:output_type -> fin_aggregator_service.GetMonzoAuthURLResponse
-	13, // 29: fin_aggregator_service.FinAggregatorService.UploadCSV:output_type -> fin_aggregator_service.UploadCSVResponse
-	16, // 30: fin_aggregator_service.FinAggregatorService.ListBank:output_type -> fin_aggregator_service.ListBankResponse
-	19, // 31: fin_aggregator_service.FinAggregatorService.ListUser:output_type -> fin_aggregator_service.ListUserResponse
-	22, // 32: fin_aggregator_service.FinAggregatorService.ListCategory:output_type -> fin_aggregator_service.ListCategoryResponse
-	25, // 33: fin_aggregator_service.FinAggregatorService.ListTransactionType:output_type -> fin_aggregator_service.ListTransactionTypeResponse
-	24, // [24:34] is the sub-list for method output_type
-	14, // [14:24] is the sub-list for method input_type
+	3,  // 14: fin_aggregator_service.FinAggregatorService.GetTransactions:input_type -> fin_aggregator_service.GetTransactionsRequest
+	5,  // 15: fin_aggregator_service.FinAggregatorService.UpdateTransaction:input_type -> fin_aggregator_service.UpdateTransactionRequest
+	11, // 16: fin_aggregator_service.FinAggregatorService.GetMonzoAuthURL:input_type -> fin_aggregator_service.GetMonzoAuthURLRequest
+	7,  // 17: fin_aggregator_service.FinAggregatorService.MonzoCallback:input_type -> fin_aggregator_service.MonzoCallbackRequest
+	9,  // 18: fin_aggregator_service.FinAggregatorService.GetMonzoAccount:input_type -> fin_aggregator_service.MonzoAccountRequest
+	13, // 19: fin_aggregator_service.FinAggregatorService.LoadMonzoTransactions:input_type -> fin_aggregator_service.LoadMonzoTransactionsRequest
+	15, // 20: fin_aggregator_service.FinAggregatorService.UploadCSV:input_type -> fin_aggregator_service.UploadCSVRequest
+	18, // 21: fin_aggregator_service.FinAggregatorService.ListBank:input_type -> fin_aggregator_service.ListBankRequest
+	21, // 22: fin_aggregator_service.FinAggregatorService.ListUser:input_type -> fin_aggregator_service.ListUserRequest
+	24, // 23: fin_aggregator_service.FinAggregatorService.ListCategory:input_type -> fin_aggregator_service.ListCategoryRequest
+	27, // 24: fin_aggregator_service.FinAggregatorService.ListTransactionType:input_type -> fin_aggregator_service.ListTransactionTypeRequest
+	4,  // 25: fin_aggregator_service.FinAggregatorService.GetTransactions:output_type -> fin_aggregator_service.GetTransactionsResponse
+	6,  // 26: fin_aggregator_service.FinAggregatorService.UpdateTransaction:output_type -> fin_aggregator_service.UpdateTransactionResponse
+	12, // 27: fin_aggregator_service.FinAggregatorService.GetMonzoAuthURL:output_type -> fin_aggregator_service.GetMonzoAuthURLResponse
+	8,  // 28: fin_aggregator_service.FinAggregatorService.MonzoCallback:output_type -> fin_aggregator_service.MonzoCallbackResponse
+	10, // 29: fin_aggregator_service.FinAggregatorService.GetMonzoAccount:output_type -> fin_aggregator_service.MonzoAccountResponse
+	14, // 30: fin_aggregator_service.FinAggregatorService.LoadMonzoTransactions:output_type -> fin_aggregator_service.LoadMonzoTransactionsResponse
+	16, // 31: fin_aggregator_service.FinAggregatorService.UploadCSV:output_type -> fin_aggregator_service.UploadCSVResponse
+	19, // 32: fin_aggregator_service.FinAggregatorService.ListBank:output_type -> fin_aggregator_service.ListBankResponse
+	22, // 33: fin_aggregator_service.FinAggregatorService.ListUser:output_type -> fin_aggregator_service.ListUserResponse
+	25, // 34: fin_aggregator_service.FinAggregatorService.ListCategory:output_type -> fin_aggregator_service.ListCategoryResponse
+	28, // 35: fin_aggregator_service.FinAggregatorService.ListTransactionType:output_type -> fin_aggregator_service.ListTransactionTypeResponse
+	25, // [25:36] is the sub-list for method output_type
+	14, // [14:25] is the sub-list for method input_type
 	14, // [14:14] is the sub-list for extension type_name
 	14, // [14:14] is the sub-list for extension extendee
 	0,  // [0:14] is the sub-list for field type_name
@@ -1575,8 +1752,8 @@ func file_api_fin_aggregate_service_fin_aggregate_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc), len(file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   25,
+			NumEnums:      2,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

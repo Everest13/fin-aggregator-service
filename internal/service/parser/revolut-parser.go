@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"context"
 	"fmt"
 	"github.com/Everest13/fin-aggregator-service/internal/service/bank"
 	"github.com/Everest13/fin-aggregator-service/internal/service/transaction"
+	"strconv"
 )
 
 type revolutParser struct {
@@ -20,7 +22,7 @@ func newRevolutParser(baseParser *baseParser) *revolutParser {
 	return rP
 }
 
-func (r *revolutParser) parseAmount(tr *transaction.Transaction, data []string) error {
+func (r *revolutParser) parseAmount(_ context.Context, tr *transaction.Transaction, data []string) error {
 	if len(data) == 0 || data[0] == "" {
 		return fmt.Errorf("empty amount data")
 	}
@@ -33,8 +35,10 @@ func (r *revolutParser) parseAmount(tr *transaction.Transaction, data []string) 
 		tr.Type = transaction.IncomeTransactionType
 	}
 
-	//todo check amount
-	tr.Amount = amountStr
+	if _, err := strconv.ParseFloat(amountStr, 64); err != nil {
+		return fmt.Errorf("invalid amount format: %s", amountStr)
+	}
 
+	tr.Amount = amountStr
 	return nil
 }

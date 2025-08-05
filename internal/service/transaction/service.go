@@ -2,11 +2,13 @@ package transaction
 
 import (
 	"context"
+	"fmt"
 	"github.com/Everest13/fin-aggregator-service/internal/service/category"
+	"github.com/Everest13/fin-aggregator-service/internal/utils/logger"
+	"github.com/Everest13/fin-aggregator-service/internal/utils/psql"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log"
 	"strconv"
 	"time"
 )
@@ -24,11 +26,11 @@ func NewService(dbPool *pgxpool.Pool, categoryService *category.Service) *Servic
 	}
 }
 
-// todo Создаём партиции на год вперёд
 func (s *Service) Initialize(ctx context.Context) error {
 	return s.PreCreatePartitions(ctx, 12)
 }
 
+// Creates parties for a year in advance
 func (s *Service) PreCreatePartitions(ctx context.Context, months int) error {
 	now := time.Now()
 
@@ -37,18 +39,19 @@ func (s *Service) PreCreatePartitions(ctx context.Context, months int) error {
 		monthKey := monthDate.Format("2006_01")
 
 		if err := s.repo.ensurePartition(ctx, monthKey); err != nil {
-			//todo log + err
-			log.Printf("Failed to create partition for %s: %v", monthKey, err)
+			logger.ErrorWithFields("failed to create partition", err, "month_key", monthKey)
+			return fmt.Errorf("failed to create partition: %w", err)
 		}
 	}
 
 	return nil
 }
 
-func (s *Service) GetTransactions(ctx context.Context, month int32, year int32, userID int64, bankID int64) (*TransactionSummary, error) {
-	enrichedTrs, err := s.repo.getTransactions(ctx, month, year, userID, bankID)
+func (s *Service) GetSummaryTransactions(ctx context.Context, month int32, year int32, userID int64, bankID int64) (*TransactionSummary, error) {
+	enrichedTrs, err := s.repo.enrichedTransactionList(ctx, month, year, userID, bankID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get transactions: %v", err)
+		logger.ErrorWithFields("failed to get transactions", err, "user_id", userID, "bank_id", bankID, "month", month, "year", year)
+		return nil, psql.MapPostgresError("failed to get transactions", err)
 	}
 
 	var totalIncome float64 = 0
@@ -56,8 +59,12 @@ func (s *Service) GetTransactions(ctx context.Context, month int32, year int32, 
 	for _, tr := range enrichedTrs {
 		amount, err := strconv.ParseFloat(tr.Amount, 64)
 		if err != nil {
-			//todo
-			// игнорируем или логируем ошибку парсинга суммы
+			logger.ErrorWithFields("failed to parse transaction amount", err,
+				"transaction_id", tr.ID,
+				"external_id", tr.ExternalID,
+				"amount", tr.Amount,
+			)
+			continue
 		}
 
 		switch tr.Type {
@@ -76,29 +83,30 @@ func (s *Service) GetTransactions(ctx context.Context, month int32, year int32, 
 	}, nil
 }
 
-// todo переделать на работу с обычной транзакции которую можно без join получить
 func (s *Service) UpdateTransaction(ctx context.Context, data *TransactionUpdateData) (*EnrichedTransaction, error) {
-	enrichedTr, err := s.repo.getEnrichedTransaction(ctx, data.ID)
+	tr, err := s.repo.getEnrichedTransaction(ctx, data.ID)
 	if err != nil {
-		return nil, status.Errorf(codes.NotFound, "transaction with ID %s not found: %v", data.ID, err)
+		logger.ErrorWithFields("transaction not found", err, "transaction_id", data.ID)
+		return nil, psql.MapPostgresError("transaction not found", err)
 	}
 
 	if data.Type != nil {
-		enrichedTr.Type = *data.Type
+		tr.Type = *data.Type
 	}
 
 	if data.CategoryID != nil {
-		category, err := s.categoryService.GetCategoryByID(ctx, *data.CategoryID)
+		ctgr, err := s.categoryService.GetCategoryByID(ctx, *data.CategoryID)
 		if err != nil {
-			return nil, status.Errorf(codes.NotFound, "category with ID %s not found: %v", *data.CategoryID, err)
+			return nil, err
 		}
-		enrichedTr.CategoryID = category.ID
-		enrichedTr.CategoryName = category.Name
+		tr.CategoryID = ctgr.ID
+		tr.CategoryName = ctgr.Name
 	}
 
-	updatedTr, err := s.repo.updateTransaction(ctx, enrichedTr)
+	updatedTr, err := s.repo.updateTransaction(ctx, tr)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update transaction: %v", err)
+		logger.Error("failed to update transaction", err)
+		return nil, psql.MapPostgresError("failed to update transaction", err)
 	}
 
 	newTr := &EnrichedTransaction{
@@ -112,8 +120,8 @@ func (s *Service) UpdateTransaction(ctx context.Context, data *TransactionUpdate
 		Type:            updatedTr.Type,
 		TransactionDate: updatedTr.TransactionDate,
 		CreatedAt:       updatedTr.CreatedAt,
-		BankName:        enrichedTr.BankName,
-		CategoryName:    enrichedTr.CategoryName,
+		BankName:        tr.BankName,
+		CategoryName:    tr.CategoryName,
 	}
 
 	return newTr, nil
@@ -121,8 +129,21 @@ func (s *Service) UpdateTransaction(ctx context.Context, data *TransactionUpdate
 
 func (s *Service) SaveTransactions(ctx context.Context, transactions []*Transaction) error {
 	if len(transactions) == 0 {
-		return nil
+		return status.Errorf(codes.InvalidArgument, "no transactions to save")
 	}
 
-	return s.repo.saveTransaction(ctx, transactions)
+	err := s.repo.saveTransaction(ctx, transactions)
+	if err != nil {
+		return psql.MapPostgresError("failed to save transactions", err)
+	}
+
+	return err
+}
+
+func (s *Service) GetTransactionTypeList() []TransactionType {
+	return []TransactionType{
+		UnspecifiedTransactionType,
+		IncomeTransactionType,
+		OutcomeTransactionType,
+	}
 }

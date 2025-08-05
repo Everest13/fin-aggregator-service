@@ -6,11 +6,9 @@ import (
 )
 
 func (f *FinAggregatorServer) ListTransactionType(_ context.Context, _ *pb.ListTransactionTypeRequest) (*pb.ListTransactionTypeResponse, error) {
+	types := f.transactionService.GetTransactionTypeList()
+
 	return &pb.ListTransactionTypeResponse{
-		Type: []pb.TransactionType{
-			pb.TransactionType_INCOME,
-			pb.TransactionType_OUTCOME,
-			pb.TransactionType_UNSPECIFIED,
-		},
+		Type: convertTransactionTypeList(types),
 	}, nil
 }

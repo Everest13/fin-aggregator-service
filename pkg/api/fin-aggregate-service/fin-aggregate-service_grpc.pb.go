@@ -21,9 +21,10 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	FinAggregatorService_GetTransactions_FullMethodName       = "/fin_aggregator_service.FinAggregatorService/GetTransactions"
 	FinAggregatorService_UpdateTransaction_FullMethodName     = "/fin_aggregator_service.FinAggregatorService/UpdateTransaction"
-	FinAggregatorService_MonzoCallback_FullMethodName         = "/fin_aggregator_service.FinAggregatorService/MonzoCallback"
-	FinAggregatorService_LoadMonzoTransactions_FullMethodName = "/fin_aggregator_service.FinAggregatorService/LoadMonzoTransactions"
 	FinAggregatorService_GetMonzoAuthURL_FullMethodName       = "/fin_aggregator_service.FinAggregatorService/GetMonzoAuthURL"
+	FinAggregatorService_MonzoCallback_FullMethodName         = "/fin_aggregator_service.FinAggregatorService/MonzoCallback"
+	FinAggregatorService_GetMonzoAccount_FullMethodName       = "/fin_aggregator_service.FinAggregatorService/GetMonzoAccount"
+	FinAggregatorService_LoadMonzoTransactions_FullMethodName = "/fin_aggregator_service.FinAggregatorService/LoadMonzoTransactions"
 	FinAggregatorService_UploadCSV_FullMethodName             = "/fin_aggregator_service.FinAggregatorService/UploadCSV"
 	FinAggregatorService_ListBank_FullMethodName              = "/fin_aggregator_service.FinAggregatorService/ListBank"
 	FinAggregatorService_ListUser_FullMethodName              = "/fin_aggregator_service.FinAggregatorService/ListUser"
@@ -37,9 +38,10 @@ const (
 type FinAggregatorServiceClient interface {
 	GetTransactions(ctx context.Context, in *GetTransactionsRequest, opts ...grpc.CallOption) (*GetTransactionsResponse, error)
 	UpdateTransaction(ctx context.Context, in *UpdateTransactionRequest, opts ...grpc.CallOption) (*UpdateTransactionResponse, error)
-	MonzoCallback(ctx context.Context, in *MonzoCallbackRequest, opts ...grpc.CallOption) (*MonzoCallbackResponse, error)
-	LoadMonzoTransactions(ctx context.Context, in *LoadMonzoTransactionsRequest, opts ...grpc.CallOption) (*LoadMonzoTransactionsResponse, error)
 	GetMonzoAuthURL(ctx context.Context, in *GetMonzoAuthURLRequest, opts ...grpc.CallOption) (*GetMonzoAuthURLResponse, error)
+	MonzoCallback(ctx context.Context, in *MonzoCallbackRequest, opts ...grpc.CallOption) (*MonzoCallbackResponse, error)
+	GetMonzoAccount(ctx context.Context, in *MonzoAccountRequest, opts ...grpc.CallOption) (*MonzoAccountResponse, error)
+	LoadMonzoTransactions(ctx context.Context, in *LoadMonzoTransactionsRequest, opts ...grpc.CallOption) (*LoadMonzoTransactionsResponse, error)
 	UploadCSV(ctx context.Context, in *UploadCSVRequest, opts ...grpc.CallOption) (*UploadCSVResponse, error)
 	ListBank(ctx context.Context, in *ListBankRequest, opts ...grpc.CallOption) (*ListBankResponse, error)
 	ListUser(ctx context.Context, in *ListUserRequest, opts ...grpc.CallOption) (*ListUserResponse, error)
@@ -75,6 +77,16 @@ func (c *finAggregatorServiceClient) UpdateTransaction(ctx context.Context, in *
 	return out, nil
 }
 
+func (c *finAggregatorServiceClient) GetMonzoAuthURL(ctx context.Context, in *GetMonzoAuthURLRequest, opts ...grpc.CallOption) (*GetMonzoAuthURLResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMonzoAuthURLResponse)
+	err := c.cc.Invoke(ctx, FinAggregatorService_GetMonzoAuthURL_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *finAggregatorServiceClient) MonzoCallback(ctx context.Context, in *MonzoCallbackRequest, opts ...grpc.CallOption) (*MonzoCallbackResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MonzoCallbackResponse)
@@ -85,20 +97,20 @@ func (c *finAggregatorServiceClient) MonzoCallback(ctx context.Context, in *Monz
 	return out, nil
 }
 
-func (c *finAggregatorServiceClient) LoadMonzoTransactions(ctx context.Context, in *LoadMonzoTransactionsRequest, opts ...grpc.CallOption) (*LoadMonzoTransactionsResponse, error) {
+func (c *finAggregatorServiceClient) GetMonzoAccount(ctx context.Context, in *MonzoAccountRequest, opts ...grpc.CallOption) (*MonzoAccountResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoadMonzoTransactionsResponse)
-	err := c.cc.Invoke(ctx, FinAggregatorService_LoadMonzoTransactions_FullMethodName, in, out, cOpts...)
+	out := new(MonzoAccountResponse)
+	err := c.cc.Invoke(ctx, FinAggregatorService_GetMonzoAccount_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *finAggregatorServiceClient) GetMonzoAuthURL(ctx context.Context, in *GetMonzoAuthURLRequest, opts ...grpc.CallOption) (*GetMonzoAuthURLResponse, error) {
+func (c *finAggregatorServiceClient) LoadMonzoTransactions(ctx context.Context, in *LoadMonzoTransactionsRequest, opts ...grpc.CallOption) (*LoadMonzoTransactionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetMonzoAuthURLResponse)
-	err := c.cc.Invoke(ctx, FinAggregatorService_GetMonzoAuthURL_FullMethodName, in, out, cOpts...)
+	out := new(LoadMonzoTransactionsResponse)
+	err := c.cc.Invoke(ctx, FinAggregatorService_LoadMonzoTransactions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,9 +173,10 @@ func (c *finAggregatorServiceClient) ListTransactionType(ctx context.Context, in
 type FinAggregatorServiceServer interface {
 	GetTransactions(context.Context, *GetTransactionsRequest) (*GetTransactionsResponse, error)
 	UpdateTransaction(context.Context, *UpdateTransactionRequest) (*UpdateTransactionResponse, error)
-	MonzoCallback(context.Context, *MonzoCallbackRequest) (*MonzoCallbackResponse, error)
-	LoadMonzoTransactions(context.Context, *LoadMonzoTransactionsRequest) (*LoadMonzoTransactionsResponse, error)
 	GetMonzoAuthURL(context.Context, *GetMonzoAuthURLRequest) (*GetMonzoAuthURLResponse, error)
+	MonzoCallback(context.Context, *MonzoCallbackRequest) (*MonzoCallbackResponse, error)
+	GetMonzoAccount(context.Context, *MonzoAccountRequest) (*MonzoAccountResponse, error)
+	LoadMonzoTransactions(context.Context, *LoadMonzoTransactionsRequest) (*LoadMonzoTransactionsResponse, error)
 	UploadCSV(context.Context, *UploadCSVRequest) (*UploadCSVResponse, error)
 	ListBank(context.Context, *ListBankRequest) (*ListBankResponse, error)
 	ListUser(context.Context, *ListUserRequest) (*ListUserResponse, error)
@@ -185,14 +198,17 @@ func (UnimplementedFinAggregatorServiceServer) GetTransactions(context.Context, 
 func (UnimplementedFinAggregatorServiceServer) UpdateTransaction(context.Context, *UpdateTransactionRequest) (*UpdateTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateTransaction not implemented")
 }
+func (UnimplementedFinAggregatorServiceServer) GetMonzoAuthURL(context.Context, *GetMonzoAuthURLRequest) (*GetMonzoAuthURLResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMonzoAuthURL not implemented")
+}
 func (UnimplementedFinAggregatorServiceServer) MonzoCallback(context.Context, *MonzoCallbackRequest) (*MonzoCallbackResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method MonzoCallback not implemented")
 }
+func (UnimplementedFinAggregatorServiceServer) GetMonzoAccount(context.Context, *MonzoAccountRequest) (*MonzoAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMonzoAccount not implemented")
+}
 func (UnimplementedFinAggregatorServiceServer) LoadMonzoTransactions(context.Context, *LoadMonzoTransactionsRequest) (*LoadMonzoTransactionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoadMonzoTransactions not implemented")
-}
-func (UnimplementedFinAggregatorServiceServer) GetMonzoAuthURL(context.Context, *GetMonzoAuthURLRequest) (*GetMonzoAuthURLResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetMonzoAuthURL not implemented")
 }
 func (UnimplementedFinAggregatorServiceServer) UploadCSV(context.Context, *UploadCSVRequest) (*UploadCSVResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadCSV not implemented")
@@ -266,6 +282,24 @@ func _FinAggregatorService_UpdateTransaction_Handler(srv interface{}, ctx contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FinAggregatorService_GetMonzoAuthURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMonzoAuthURLRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinAggregatorServiceServer).GetMonzoAuthURL(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinAggregatorService_GetMonzoAuthURL_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinAggregatorServiceServer).GetMonzoAuthURL(ctx, req.(*GetMonzoAuthURLRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FinAggregatorService_MonzoCallback_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MonzoCallbackRequest)
 	if err := dec(in); err != nil {
@@ -284,6 +318,24 @@ func _FinAggregatorService_MonzoCallback_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FinAggregatorService_GetMonzoAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MonzoAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinAggregatorServiceServer).GetMonzoAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinAggregatorService_GetMonzoAccount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinAggregatorServiceServer).GetMonzoAccount(ctx, req.(*MonzoAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FinAggregatorService_LoadMonzoTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoadMonzoTransactionsRequest)
 	if err := dec(in); err != nil {
@@ -298,24 +350,6 @@ func _FinAggregatorService_LoadMonzoTransactions_Handler(srv interface{}, ctx co
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FinAggregatorServiceServer).LoadMonzoTransactions(ctx, req.(*LoadMonzoTransactionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _FinAggregatorService_GetMonzoAuthURL_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMonzoAuthURLRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FinAggregatorServiceServer).GetMonzoAuthURL(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FinAggregatorService_GetMonzoAuthURL_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FinAggregatorServiceServer).GetMonzoAuthURL(ctx, req.(*GetMonzoAuthURLRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -426,16 +460,20 @@ var FinAggregatorService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FinAggregatorService_UpdateTransaction_Handler,
 		},
 		{
+			MethodName: "GetMonzoAuthURL",
+			Handler:    _FinAggregatorService_GetMonzoAuthURL_Handler,
+		},
+		{
 			MethodName: "MonzoCallback",
 			Handler:    _FinAggregatorService_MonzoCallback_Handler,
 		},
 		{
-			MethodName: "LoadMonzoTransactions",
-			Handler:    _FinAggregatorService_LoadMonzoTransactions_Handler,
+			MethodName: "GetMonzoAccount",
+			Handler:    _FinAggregatorService_GetMonzoAccount_Handler,
 		},
 		{
-			MethodName: "GetMonzoAuthURL",
-			Handler:    _FinAggregatorService_GetMonzoAuthURL_Handler,
+			MethodName: "LoadMonzoTransactions",
+			Handler:    _FinAggregatorService_LoadMonzoTransactions_Handler,
 		},
 		{
 			MethodName: "UploadCSV",

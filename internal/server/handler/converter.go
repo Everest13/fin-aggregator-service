@@ -13,20 +13,33 @@ func convertBankListToPb(banks []bank.Bank) []*pb.Bank {
 	res := make([]*pb.Bank, len(banks))
 	for i, b := range banks {
 		res[i] = &pb.Bank{
-			Id:   b.ID,
-			Name: b.Name,
+			Id:           b.ID,
+			Name:         b.Name,
+			ImportMethod: convertBankImportTypeToPb(b.ImportMethod),
 		}
 	}
 
 	return res
 }
 
+func convertBankImportTypeToPb(importType bank.ImportMethod) pb.BankImportMethod {
+	switch importType {
+	case bank.CSVImportMethod:
+		return pb.BankImportMethod_CSV
+	case bank.APIImportMethod:
+		return pb.BankImportMethod_API
+	default:
+		return pb.BankImportMethod_UNDEFINED
+	}
+}
+
 func convertUserListToPb(users []user.User) []*pb.User {
 	res := make([]*pb.User, len(users))
 	for i, u := range users {
 		res[i] = &pb.User{
-			Id:   u.ID,
-			Name: u.Name,
+			Id:    u.ID,
+			Name:  u.Name,
+			Banks: u.Banks,
 		}
 	}
 
@@ -121,4 +134,13 @@ func mapPbToTransactionType(t pb.TransactionType) transaction.TransactionType {
 	default:
 		return transaction.UnspecifiedTransactionType
 	}
+}
+
+func convertTransactionTypeList(types []transaction.TransactionType) []pb.TransactionType {
+	res := make([]pb.TransactionType, 0, len(types))
+	for _, t := range types {
+		res = append(res, mapTransactionTypeToPb(t))
+	}
+
+	return res
 }

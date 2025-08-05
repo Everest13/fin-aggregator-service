@@ -2,7 +2,6 @@ package category
 
 import (
 	"context"
-	"fmt"
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -31,7 +30,7 @@ func (r *repository) categoryList(ctx context.Context) ([]Category, error) {
 	var categories []Category
 	err = pgxscan.Select(ctx, r.dbPool, &categories, query, args...)
 	if err != nil {
-		//todo
+		return nil, err
 	}
 
 	return categories, nil
@@ -51,7 +50,6 @@ func (r *repository) getCategoriesKeywords(ctx context.Context) ([]Keyword, erro
 	var result []Keyword
 	err = pgxscan.Select(ctx, r.dbPool, &result, query, args...)
 	if err != nil {
-		//todo
 		return nil, err
 	}
 
@@ -66,14 +64,13 @@ func (r *repository) getCategoryByID(ctx context.Context, categoryID int64) (*Ca
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
-		return nil, fmt.Errorf("failed to build SQL: %w", err)
+		return nil, err
 	}
 
 	var category Category
 	err = pgxscan.Get(ctx, r.dbPool, &category, query, args...)
 	if err != nil {
-		//todo
-		return nil, fmt.Errorf("failed to get category by ID: %w", err)
+		return nil, err
 	}
 
 	return &category, nil

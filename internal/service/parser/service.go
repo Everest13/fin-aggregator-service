@@ -8,6 +8,7 @@ import (
 	"github.com/Everest13/fin-aggregator-service/internal/service/bank"
 	"github.com/Everest13/fin-aggregator-service/internal/service/category"
 	"github.com/Everest13/fin-aggregator-service/internal/service/transaction"
+	"github.com/Everest13/fin-aggregator-service/internal/utils/logger"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -26,7 +27,7 @@ func NewService(
 ) *Service {
 
 	service := &Service{
-		parserFactory:      newParserFactory(categoryService.Store()),
+		parserFactory:      newParserFactory(categoryService),
 		bankService:        bankService,
 		transactionService: transactionService,
 		categoryService:    categoryService,
@@ -35,39 +36,40 @@ func NewService(
 	return service
 }
 
-// todo add logs
 func (s *Service) UploadCSV(ctx context.Context, bankID, userID int64, csvData []byte) (map[int64][]error, error) {
 	bankInfo, err := s.bankService.GetBank(ctx, bankID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get bank info: %v", err)
+		logger.ErrorWithFields("failed to get bank", err, "bank_id", bankID)
+		return nil, status.Errorf(codes.Internal, "failed to get bank")
 	}
 
 	bankParser := s.parserFactory.GetParser(bank.BankName(bankInfo.Name))
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get parser: %v", err)
-	}
 
 	reader := csv.NewReader(bytes.NewReader(csvData))
 	records, err := reader.ReadAll()
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to read CSV: %v", err)
+		logger.ErrorWithFields("CSV parsing error", err, "bank_id", bankID, "user_id", userID)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid CSV format")
 	}
 
 	if len(records) == 0 || len(records[0]) == 0 {
-		return nil, status.Error(codes.InvalidArgument, "CSV file is empty or invalid")
+		return nil, status.Error(codes.InvalidArgument, "invalid CSV format")
 	}
 
-	targetIDsMap, err := s.ValidateHeaders(ctx, records[0], bankID)
+	targetIDsMap, err := s.validateHeaders(ctx, records[0], bankID)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "CSV headers validation failed: %v", err)
+		logger.ErrorWithFields("CSV headers validation failed", err, "bank_id", bankID, "user_id", userID)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid CSV format")
 	}
 
-	transactions, recordErrs := bankParser.ParseRecords(records, targetIDsMap, bankID, userID)
+	transactions, recordErrs := bankParser.ParseRecords(ctx, records, targetIDsMap, bankID, userID)
 	err = s.transactionService.SaveTransactions(ctx, transactions)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to save transactions: %v", err)
+		logger.ErrorWithFields("transaction persistence error", err, "bank_id", bankID, "user_id", userID)
+		return nil, status.Errorf(codes.Internal, "transaction persistence error")
 	}
 
+	//todo
 	return recordErrs, nil
 }
 
@@ -76,21 +78,21 @@ var requiredFields = []bank.TargetField{
 	bank.AmountTargetField,
 }
 
-func (s *Service) ValidateHeaders(ctx context.Context, csvHeaders []string, bankID int64) (map[bank.TargetField][]int, error) {
+func (s *Service) validateHeaders(ctx context.Context, csvHeaders []string, bankID int64) (map[bank.TargetField][]int, error) {
 	headers, err := s.bankService.GetBankHeaders(ctx, bankID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get bank headers: %v", err)
+		return nil, fmt.Errorf("failed to get bank headers: %w", err)
 	}
 
-	headerMap := make(map[string]bank.Header, len(headers))
+	headerMap := make(map[string][]bank.TargetField, len(headers))
 	for _, h := range headers {
-		headerMap[h.Name] = h
+		headerMap[h.Name] = append(headerMap[h.Name], h.TargetField...)
 	}
 
 	targetField := map[bank.TargetField][]int{}
 	for i, h := range csvHeaders {
 		if header, ok := headerMap[h]; ok {
-			for _, t := range header.TargetField {
+			for _, t := range header {
 				targetField[t] = append(targetField[t], i)
 			}
 		}

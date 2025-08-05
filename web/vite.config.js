@@ -41,6 +41,14 @@ export default defineConfig({
       '/transactions/{transaction_id}': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+      },
+      '/monzo/account': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      '/monzo/callback': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
       }
     }
   }

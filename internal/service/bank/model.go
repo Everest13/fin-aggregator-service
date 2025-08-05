@@ -23,12 +23,20 @@ const (
 	DescriptionTargetField TargetField = "DESCRIPTION"
 )
 
+type ImportMethod string
+
+const (
+	UndefinedImportMethod ImportMethod = "UNDEFINED"
+	CSVImportMethod       ImportMethod = "CSV"
+	APIImportMethod       ImportMethod = "API"
+)
+
 type Bank struct {
-	ID   int64
-	Name string
+	ID           int64
+	Name         string
+	ImportMethod ImportMethod
 }
 
-// todo отказаться от []TargetField и работать как с категориями keywords
 type Header struct {
 	ID          int64
 	BankID      int64

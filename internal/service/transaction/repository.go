@@ -37,14 +37,13 @@ func (r *repository) ensurePartition(ctx context.Context, monthKey string) error
 
 	_, err = r.dbPool.Exec(ctx, query)
 	if err != nil {
-		//todo
 		return fmt.Errorf("failed to create partition %s: %w", partitionName, err)
 	}
 
 	return nil
 }
 
-func (r *repository) getTransactions(ctx context.Context, month int32, year int32, userID int64, bankID int64) ([]EnrichedTransaction, error) {
+func (r *repository) enrichedTransactionList(ctx context.Context, month int32, year int32, userID int64, bankID int64) ([]EnrichedTransaction, error) {
 	queryBuilder := squirrel.
 		Select(
 			"t.id",
@@ -79,13 +78,11 @@ func (r *repository) getTransactions(ctx context.Context, month int32, year int3
 
 	query, args, err := queryBuilder.ToSql()
 	if err != nil {
-		//todo
 		return nil, fmt.Errorf("failed to build SQL: %w", err)
 	}
 
 	var transactions []EnrichedTransaction
 	if err = pgxscan.Select(ctx, r.dbPool, &transactions, query, args...); err != nil {
-		//todo
 		return nil, fmt.Errorf("failed to select transactions: %w", err)
 	}
 
@@ -107,30 +104,61 @@ func (r *repository) getEnrichedTransaction(ctx context.Context, id int64) (*Enr
 			"t.created_at",
 			"b.name AS bank_name",
 			"c.name AS category_name",
+			"u.name AS user_name",
 		).
 		From("transaction t").
 		LeftJoin("bank b ON t.bank_id = b.id").
 		LeftJoin("category c ON t.category_id = c.id").
+		LeftJoin("users u ON t.user_id = u.id").
 		Where(squirrel.Eq{"t.id": id}).
 		PlaceholderFormat(squirrel.Dollar)
 
 	query, args, err := queryBuilder.ToSql()
 	if err != nil {
-		//todo
 		return nil, fmt.Errorf("failed to build SQL: %w", err)
 	}
 
 	var transaction EnrichedTransaction
 	if err = pgxscan.Get(ctx, r.dbPool, &transaction, query, args...); err != nil {
-		//todo
 		return nil, fmt.Errorf("failed to get transaction: %w", err)
 	}
 
 	return &transaction, nil
 }
 
-// todo нужно отслеживать дублирующиеся траназкции, []*Transaction?
-// todo надо чекать ошибки на psql внутренние
+// todo
+func (r *repository) getTransaction(ctx context.Context, id int64) (*Transaction, error) {
+	queryBuilder := squirrel.
+		Select(
+			"id",
+			"external_id",
+			"bank_id",
+			"user_id",
+			"amount",
+			"category_id",
+			"description",
+			"type",
+			"transaction_date",
+			"created_at",
+			"updated_at",
+		).
+		From(transactionTable).
+		Where(squirrel.Eq{"id": id}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	query, args, err := queryBuilder.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build SQL: %w", err)
+	}
+
+	var transaction Transaction
+	if err = pgxscan.Get(ctx, r.dbPool, &transaction, query, args...); err != nil {
+		return nil, fmt.Errorf("failed to get transaction: %w", err)
+	}
+
+	return &transaction, nil
+}
+
 func (r *repository) saveTransaction(ctx context.Context, transactions []*Transaction) error {
 	builder := squirrel.
 		Insert(transactionTable).
@@ -150,15 +178,13 @@ func (r *repository) saveTransaction(ctx context.Context, transactions []*Transa
 		)
 	}
 
-	query, args, err := builder.ToSql()
+	query, args, err := builder.Suffix("ON CONFLICT ON CONSTRAINT uniq_transaction_external DO NOTHING").ToSql()
 	if err != nil {
-		//todo
-		return fmt.Errorf("failed to build insert query: %w", err)
+		return fmt.Errorf("failed to build SQL: %w", err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, query, args...)
 	if err != nil {
-		//todo
 		return fmt.Errorf("failed to execute insert: %w", err)
 	}
 
@@ -176,14 +202,12 @@ func (r *repository) updateTransaction(ctx context.Context, tx *EnrichedTransact
 		ToSql()
 
 	if err != nil {
-		//todo
 		return nil, fmt.Errorf("failed to build update SQL: %w", err)
 	}
 
 	var updatedTr Transaction
 	err = pgxscan.Get(ctx, r.dbPool, &updatedTr, query, args...)
 	if err != nil {
-		//todo
 		return nil, fmt.Errorf("failed to update transaction: %w", err)
 	}
 
