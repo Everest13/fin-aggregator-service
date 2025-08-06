@@ -76,6 +76,90 @@ h1 {
   opacity: 1;
 }
 
+/* Updated View Tabs with smoother, bigger style */
+.view-tabs-container {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.view-tab {
+  flex: 1;
+  padding: 10px 24px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6b7280;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 2;
+  letter-spacing: 0.01em;
+}
+
+.view-tab:hover {
+  color: #374151;
+}
+
+.view-tab.active {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Sliding background effect */
+.view-tabs-container::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 10px;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  z-index: 1;
+}
+
+.view-tabs-container:has(.view-tab:last-child.active)::before {
+  transform: translateX(calc(100% + 0px));
+}
+
+/* Tab icons */
+.view-tab::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  vertical-align: middle;
+  background-size: contain;
+  opacity: 0.8;
+  transition: opacity 0.3s;
+}
+
+.view-tab.active::before {
+  opacity: 1;
+}
+
+.view-tab:first-child::before {
+  content: '📊';
+  font-size: 20px;
+}
+
+.view-tab:last-child::before {
+  content: '📈';
+  font-size: 20px;
+}
+
 /* Modal Styles */
 .modal-overlay {
   position: fixed;
@@ -108,6 +192,8 @@ h1 {
   width: 90%;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   animation: slideUp 0.3s ease-out;
+  padding-top: 48px;
+  position: relative;
 }
 
 @keyframes slideUp {
@@ -177,6 +263,43 @@ h1 {
   transform: none;
 }
 
+/* Modal Close Button */
+.modal-close {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  line-height: 1;
+  padding: 0;
+}
+
+.modal-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+/* Modal Error */
+.modal-error {
+  padding: 12px 16px;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 6px;
+  margin: 16px 0;
+  font-size: 14px;
+  border: 1px solid #ef5350;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {
@@ -185,6 +308,19 @@ h1 {
 
   h1 {
     font-size: 24px;
+  }
+
+  .view-tabs-container {
+    margin-bottom: 24px;
+  }
+
+  .view-tab {
+    padding: 12px 20px;
+    font-size: 15px;
+  }
+
+  .view-tab::before {
+    margin-right: 6px;
   }
 
   .modal-content {
@@ -198,50 +334,5 @@ h1 {
 
   .modal-button {
     width: 100%;
-  }
-
-  /* Add these styles to your existing App.css */
-
-  /* Modal Close Button */
-  .modal-close {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    width: 32px;
-    height: 32px;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: #666;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    transition: all 0.2s;
-    line-height: 1;
-    padding: 0;
-  }
-
-  .modal-close:hover {
-    background: #f0f0f0;
-    color: #333;
-  }
-
-  /* Modal Error */
-  .modal-error {
-    padding: 12px 16px;
-    background: #ffebee;
-    color: #c62828;
-    border-radius: 6px;
-    margin: 16px 0;
-    font-size: 14px;
-    border: 1px solid #ef5350;
-  }
-
-  /* Update modal content to have padding for close button */
-  .modal-content {
-    padding-top: 48px;
-    position: relative;
   }
 }

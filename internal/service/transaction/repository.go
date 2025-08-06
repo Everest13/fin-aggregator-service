@@ -43,7 +43,7 @@ func (r *repository) ensurePartition(ctx context.Context, monthKey string) error
 	return nil
 }
 
-func (r *repository) enrichedTransactionList(ctx context.Context, month int32, year int32, userID int64, bankID int64) ([]EnrichedTransaction, error) {
+func (r *repository) enrichedTransactionList(ctx context.Context, month int32, year int32) ([]EnrichedTransaction, error) {
 	queryBuilder := squirrel.
 		Select(
 			"t.id",
@@ -68,13 +68,6 @@ func (r *repository) enrichedTransactionList(ctx context.Context, month int32, y
 		Where("EXTRACT(YEAR FROM t.transaction_date) = ?", year).
 		OrderBy("t.id").
 		PlaceholderFormat(squirrel.Dollar)
-
-	if userID > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Eq{"t.user_id": userID})
-	}
-	if bankID > 0 {
-		queryBuilder = queryBuilder.Where(squirrel.Eq{"t.bank_id": bankID})
-	}
 
 	query, args, err := queryBuilder.ToSql()
 	if err != nil {

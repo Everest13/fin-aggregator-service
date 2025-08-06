@@ -20,7 +20,7 @@
   display: flex;
   gap: 16px;
   align-items: flex-end;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .form-group {
@@ -66,45 +66,14 @@
   opacity: 0.7;
 }
 
-/* Bank select with import type indicator */
-.bank-select-wrapper {
-  position: relative;
-}
-
-.bank-import-type {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #666;
-  padding: 4px 8px;
-  background: #f5f5f5;
-  border-radius: 4px;
-  width: fit-content;
-}
-
-.bank-import-type svg {
-  color: #888;
-}
+/* Bank select with import type indicator - REMOVED */
 
 /* File input styling */
 .file-input-wrapper {
   position: relative;
 }
 
-.file-input-help {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #666;
-}
-
-.file-input-help svg {
-  color: #888;
-}
+/* File input styling - REMOVED help text */
 
 /* Upload buttons */
 .upload-btn {
@@ -170,6 +139,7 @@
   .upload-controls {
     flex-direction: column;
     align-items: stretch;
+    flex-wrap: wrap;
   }
 
   .form-group {

@@ -39,8 +39,10 @@ func (p *baseParser) ParseRecords(ctx context.Context, records [][]string, targe
 
 	processRecord := func(i int) (*transaction.Transaction, []error) {
 		tr := &transaction.Transaction{
-			BankID: bankID,
-			UserID: userID,
+			BankID:     bankID,
+			UserID:     userID,
+			Type:       transaction.UnspecifiedTransactionType,
+			CategoryID: category.UncategorizedID,
 		}
 
 		record := records[i]
@@ -120,8 +122,6 @@ func (p *baseParser) parseCategory(ctx context.Context, tr *transaction.Transact
 			return nil
 		}
 	}
-
-	tr.CategoryID = category.UncategorizedID
 
 	return nil
 }

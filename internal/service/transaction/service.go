@@ -47,10 +47,10 @@ func (s *Service) PreCreatePartitions(ctx context.Context, months int) error {
 	return nil
 }
 
-func (s *Service) GetSummaryTransactions(ctx context.Context, month int32, year int32, userID int64, bankID int64) (*TransactionSummary, error) {
-	enrichedTrs, err := s.repo.enrichedTransactionList(ctx, month, year, userID, bankID)
+func (s *Service) GetSummaryTransactions(ctx context.Context, month int32, year int32) (*TransactionSummary, error) {
+	enrichedTrs, err := s.repo.enrichedTransactionList(ctx, month, year)
 	if err != nil {
-		logger.ErrorWithFields("failed to get transactions", err, "user_id", userID, "bank_id", bankID, "month", month, "year", year)
+		logger.ErrorWithFields("failed to get transactions", err, "month", month, "year", year)
 		return nil, psql.MapPostgresError("failed to get transactions", err)
 	}
 

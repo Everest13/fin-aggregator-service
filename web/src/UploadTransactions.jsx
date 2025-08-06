@@ -53,10 +53,6 @@ function ImportMethodRenderer({ importType, bankName, file, onFileChange, onSubm
                             onChange={(e) => onFileChange(e.target.files[0])}
                             required
                         />
-                        <div className="file-input-help">
-                            <Icon size={16} />
-                            <span>{config.helpText}</span>
-                        </div>
                     </div>
                 </div>
                 <button
@@ -187,21 +183,7 @@ function UploadTransactions({ banks, users, onUpload, onMonzoImport }) {
                                 </option>
                             ))}
                         </select>
-                        {selectedBankObject && (
-                            <div className="bank-import-type">
-                                {(() => {
-                                    const configKey = importType === BankImportType.API ? 'API' : 'CSV';
-                                    const config = IMPORT_CONFIGS[configKey];
-                                    const Icon = config?.icon || AlertCircle;
-                                    return <Icon size={16} />;
-                                })()}
-                                <span>
-                                    {importType === BankImportType.API
-                                        ? `API Import`
-                                        : 'CSV Upload'}
-                                </span>
-                            </div>
-                        )}
+
                     </div>
                 </div>
 

@@ -197,8 +197,21 @@ function TransactionsTable({ transactions, categories, onTransactionUpdate }) {
         );
     }
 
+    // Helper function to check if category is Transfer
+    const isTransferCategory = (categoryId, categoryName) => {
+        const category = categories.find(c => c.id === parseInt(categoryId) || c.id === categoryId);
+        return category?.name === 'Transfer' || categoryName === 'Transfer';
+    };
+
+    // Calculate totals excluding Transfer category
     const totals = transactions.reduce((acc, transaction) => {
         const amount = Math.abs(parseFloat(transaction.amount));
+
+        // Skip Transfer category transactions for totals
+        if (isTransferCategory(transaction.categoryId, transaction.categoryName)) {
+            return acc;
+        }
+
         if (transaction.type === 'INCOME') {
             acc.income += amount;
         } else if (transaction.type === 'OUTCOME') {
@@ -313,77 +326,91 @@ function TransactionsTable({ transactions, categories, onTransactionUpdate }) {
                 <div className="categories-container">
                     {Object.entries(transactionsByCategory)
                         .sort(([, a], [, b]) => b.outcome - a.outcome)
-                        .map(([categoryId, data]) => (
-                            <div key={categoryId} className="category-section">
-                                <div
-                                    className="category-header"
-                                    onClick={() => toggleCategory(categoryId)}
-                                >
-                                    <div className="category-title">
-                                        <ChevronRight
-                                            size={20}
-                                            className={`chevron ${expandedCategories.has(categoryId) ? 'expanded' : ''}`}
-                                        />
-                                        <h3>{getCategoryName(categoryId)}</h3>
-                                        <span className="transaction-count">({data.transactions.length})</span>
-                                    </div>
-                                    <div className="category-summary">
-                                        {data.income > 0 && (
-                                            <span className="summary-income">Income: +{data.income.toFixed(2)}</span>
-                                        )}
-                                        {data.outcome > 0 && (
-                                            <span className="summary-outcome">Expenses: -{data.outcome.toFixed(2)}</span>
-                                        )}
-                                    </div>
-                                </div>
+                        .map(([categoryId, data]) => {
+                            const categoryName = getCategoryName(categoryId);
+                            const isTransfer = categoryName === 'Transfer';
 
-                                {expandedCategories.has(categoryId) && (
-                                    <div className="category-transactions">
-                                        <table>
-                                            <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Description</th>
-                                                <th>Amount</th>
-                                                <th>Type</th>
-                                                <th>Category</th>
-                                                <th>Bank</th>
-                                                <th>User</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            {data.transactions
-                                                .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
-                                                .map(transaction => (
-                                                    <tr key={transaction.id}>
-                                                        <td>{formatDate(transaction.transactionDate)}</td>
-                                                        <td>{transaction.description}</td>
-                                                        <td className={`amount ${transaction.type?.toLowerCase()}`}>
-                                                            {formatAmount(transaction.amount, transaction.type)}
-                                                        </td>
-                                                        <td>
-                                                            <TransactionTypeDropdown
-                                                                transaction={transaction}
-                                                                onUpdate={onTransactionUpdate}
-                                                            />
-                                                        </td>
-                                                        <td>
-                                                            <CategoryDropdown
-                                                                transaction={transaction}
-                                                                categories={categories}
-                                                                onUpdate={onTransactionUpdate}
-                                                            />
-                                                        </td>
-                                                        <td>{transaction.bankName || 'Unknown'}</td>
-                                                        <td>{transaction.userName || '-'}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                            return (
+                                <div key={categoryId} className="category-section">
+                                    <div
+                                        className="category-header"
+                                        onClick={() => toggleCategory(categoryId)}
+                                    >
+                                        <div className="category-title">
+                                            <ChevronRight
+                                                size={20}
+                                                className={`chevron ${expandedCategories.has(categoryId) ? 'expanded' : ''}`}
+                                            />
+                                            <h3>{categoryName}</h3>
+                                            <span className="transaction-count">({data.transactions.length})</span>
+                                        </div>
+                                        <div className="category-summary">
+                                            {data.income > 0 && (
+                                                <span className="summary-income">
+                                                    {isTransfer ? 'In: ' : 'Income: '}+{data.income.toFixed(2)}
+                                                </span>
+                                            )}
+                                            {data.outcome > 0 && (
+                                                <span className="summary-outcome">
+                                                    {isTransfer ? 'Out: ' : 'Expenses: '}-{data.outcome.toFixed(2)}
+                                                </span>
+                                            )}
+                                            {isTransfer && (
+                                                <span className={data.income - data.outcome >= 0 ? 'summary-income' : 'summary-outcome'}>
+                                                    Net: {(data.income - data.outcome).toFixed(2)}
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                )}
-                            </div>
-                        ))}
+
+                                    {expandedCategories.has(categoryId) && (
+                                        <div className="category-transactions">
+                                            <table>
+                                                <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Description</th>
+                                                    <th>Amount</th>
+                                                    <th>Type</th>
+                                                    <th>Category</th>
+                                                    <th>Bank</th>
+                                                    <th>User</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {data.transactions
+                                                    .sort((a, b) => new Date(b.transactionDate) - new Date(a.transactionDate))
+                                                    .map(transaction => (
+                                                        <tr key={transaction.id}>
+                                                            <td>{formatDate(transaction.transactionDate)}</td>
+                                                            <td>{transaction.description}</td>
+                                                            <td className={`amount ${transaction.type?.toLowerCase()}`}>
+                                                                {formatAmount(transaction.amount, transaction.type)}
+                                                            </td>
+                                                            <td>
+                                                                <TransactionTypeDropdown
+                                                                    transaction={transaction}
+                                                                    onUpdate={onTransactionUpdate}
+                                                                />
+                                                            </td>
+                                                            <td>
+                                                                <CategoryDropdown
+                                                                    transaction={transaction}
+                                                                    categories={categories}
+                                                                    onUpdate={onTransactionUpdate}
+                                                                />
+                                                            </td>
+                                                            <td>{transaction.bankName || 'Unknown'}</td>
+                                                            <td>{transaction.userName || '-'}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                 </div>
             )}
 
@@ -437,14 +464,14 @@ function TransactionsTable({ transactions, categories, onTransactionUpdate }) {
 }
 
 // Main TransactionsList component
-function TransactionsList({ 
-    currentDate, 
-    onDateChange, 
-    transactions, 
-    categories, 
-    onTransactionUpdate, 
-    loading 
-}) {
+function TransactionsList({
+                              currentDate,
+                              onDateChange,
+                              transactions,
+                              categories,
+                              onTransactionUpdate,
+                              loading
+                          }) {
     return (
         <>
             <MonthNavigation

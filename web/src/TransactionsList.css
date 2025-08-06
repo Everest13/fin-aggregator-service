@@ -48,43 +48,71 @@
   color: #1a1a1a;
 }
 
-/* Month Summary */
+/* Month Summary - Updated to black and white style */
 .month-summary {
   display: flex;
-  gap: 20px;
-  padding: 20px;
-  background: white;
+  gap: 16px;
+  padding: 10px 20px;
+  /*background: white;*/
   border-radius: 8px 8px 0 0;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
+  background: #62ad7b;
 }
 
 .summary-card {
   flex: 1;
-  padding: 20px;
-  background: #f8f9fa;
-  border-radius: 8px;
+  padding: 8px 16px;
+  background: white;
+  border-radius: 6px;
   text-align: center;
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-1px);
+  border-color: #d1d5db;
 }
 
 .summary-card h4 {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #666;
+  margin: 0 0 2px 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #111827;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .summary-card .summary-income {
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 700;
-  color: #4CAF50;
+  color: #10b981;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
 }
 
 .summary-card .summary-outcome {
-  font-size: 24px;
+  font-size: 16px;
   font-weight: 700;
-  color: #f44336;
+  color: #ef4444;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+/* Special styling for balance card */
+.summary-card:last-child {
+  /*background: #f3f4f6;*/
+  border: 1px solid #e5e7eb;
+}
+
+.summary-card:last-child h4 {
+  color: #111827;
+}
+
+.summary-card:last-child .summary-income {
+  color: #10b981;
+}
+
+.summary-card:last-child .summary-outcome {
+  color: #ef4444;
 }
 
 /* View Tabs */
@@ -137,20 +165,20 @@
 }
 
 .table-wrapper th {
-  padding: 16px;
+  padding: 12px;
   text-align: left;
   font-weight: 600;
   color: #666;
-  font-size: 13px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
 
 .table-wrapper td {
-  padding: 16px;
+  padding: 12px;
   border-bottom: 1px solid #e9ecef;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .table-wrapper tbody tr {
@@ -163,27 +191,27 @@
 
 .external-id {
   font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
 }
 
 /* Categories Container */
 .categories-container {
-  padding: 20px;
+  padding: 16px;
   background: white;
   border-radius: 0 0 8px 8px;
 }
 
 .category-section {
   background: white;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
 .category-header {
-  padding: 20px;
+  padding: 12px 16px;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
@@ -199,12 +227,12 @@
 .category-title {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .category-title h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #1a1a1a;
 }
@@ -220,23 +248,23 @@
 
 .transaction-count {
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: normal;
 }
 
 .category-summary {
   display: flex;
-  gap: 24px;
-  font-size: 14px;
+  gap: 16px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .summary-income {
-  color: #4CAF50;
+  color: #10b981;
 }
 
 .summary-outcome {
-  color: #f44336;
+  color: #ef4444;
 }
 
 .category-transactions {
@@ -262,23 +290,23 @@
 
 .category-transactions thead {
   background: #f8f9fa;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .category-transactions th {
-  padding: 16px;
+  padding: 10px 12px;
   text-align: left;
   font-weight: 600;
   color: #666;
-  font-size: 13px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .category-transactions td {
-  padding: 16px;
-  border-bottom: 1px solid #e9ecef;
-  font-size: 14px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 13px;
 }
 
 .category-transactions tbody tr {
@@ -295,11 +323,11 @@
 }
 
 .amount.income {
-  color: #4CAF50;
+  color: #10b981;
 }
 
 .amount.outcome {
-  color: #f44336;
+  color: #ef4444;
 }
 
 /* Category Dropdown */
@@ -308,15 +336,15 @@
 }
 
 .category-button {
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   transition: all 0.2s;
   font-weight: 500;
 }
@@ -347,7 +375,7 @@
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  min-width: 200px;
+  min-width: 180px;
   max-height: 200px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -388,10 +416,10 @@ tr:nth-last-child(-n+3) .type-dropdown {
 }
 
 .category-option {
-  padding: 10px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
+  font-size: 13px;
   transition: background 0.2s;
 }
 
@@ -415,15 +443,15 @@ tr:nth-last-child(-n+3) .type-dropdown {
 }
 
 .type-button {
-  padding: 6px 12px;
+  padding: 4px 10px;
   background: #f0f0f0;
   border: 1px solid #ddd;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   transition: all 0.2s;
   font-weight: 500;
 }
@@ -465,15 +493,15 @@ tr:nth-last-child(-n+3) .type-dropdown {
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  min-width: 150px;
+  min-width: 120px;
   animation: dropdownOpen 0.2s ease-out;
 }
 
 .type-option {
-  padding: 10px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   border-bottom: 1px solid #f0f0f0;
-  font-size: 14px;
+  font-size: 13px;
   transition: background 0.2s;
 }
 
@@ -566,8 +594,8 @@ tr:nth-last-child(-n+3) .type-dropdown {
   }
 
   th, td {
-    padding: 12px 8px;
-    font-size: 13px;
+    padding: 8px;
+    font-size: 12px;
   }
 
   .category-dropdown {
@@ -578,5 +606,45 @@ tr:nth-last-child(-n+3) .type-dropdown {
   .type-dropdown {
     left: auto;
     right: 0;
+  }
+
+  .category-header {
+    padding: 10px 12px;
+  }
+
+  .category-title h3 {
+    font-size: 14px;
+  }
+
+  .category-summary {
+    font-size: 12px;
+    gap: 12px;
+  }
+
+  .categories-container {
+    padding: 12px;
+  }
+
+  .category-section {
+    margin-bottom: 8px;
+  }
+
+  .month-summary {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 16px;
+  }
+
+  .summary-card {
+    padding: 6px 12px;
+  }
+
+  .summary-card .summary-income,
+  .summary-card .summary-outcome {
+    font-size: 14px;
+  }
+
+  .summary-card h4 {
+    font-size: 10px;
   }
 }

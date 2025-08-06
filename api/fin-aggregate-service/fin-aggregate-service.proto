@@ -103,8 +103,6 @@ message Transaction {
 message GetTransactionsRequest {
   int32 month = 1;
   int32 year = 2;
-  int64 user_id = 3;
-  int64 bank_id = 4;
 }
 
 message GetTransactionsResponse {

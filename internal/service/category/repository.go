@@ -21,6 +21,7 @@ func (r *repository) categoryList(ctx context.Context) ([]Category, error) {
 	query, args, err := squirrel.
 		Select("*").
 		From(categoryTable).
+		OrderBy("name").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {

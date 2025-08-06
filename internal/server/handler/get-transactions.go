@@ -6,7 +6,7 @@ import (
 )
 
 func (f *FinAggregatorServer) GetTransactions(ctx context.Context, req *pb.GetTransactionsRequest) (*pb.GetTransactionsResponse, error) {
-	trSummary, err := f.transactionService.GetSummaryTransactions(ctx, req.GetMonth(), req.GetYear(), req.GetUserId(), req.GetBankId())
+	trSummary, err := f.transactionService.GetSummaryTransactions(ctx, req.GetMonth(), req.GetYear())
 	if err != nil {
 		return nil, err
 	}

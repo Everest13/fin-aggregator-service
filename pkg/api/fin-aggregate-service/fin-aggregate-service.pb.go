@@ -266,8 +266,6 @@ type GetTransactionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Month         int32                  `protobuf:"varint,1,opt,name=month,proto3" json:"month,omitempty"`
 	Year          int32                  `protobuf:"varint,2,opt,name=year,proto3" json:"year,omitempty"`
-	UserId        int64                  `protobuf:"varint,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	BankId        int64                  `protobuf:"varint,4,opt,name=bank_id,json=bankId,proto3" json:"bank_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -312,20 +310,6 @@ func (x *GetTransactionsRequest) GetMonth() int32 {
 func (x *GetTransactionsRequest) GetYear() int32 {
 	if x != nil {
 		return x.Year
-	}
-	return 0
-}
-
-func (x *GetTransactionsRequest) GetUserId() int64 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
-}
-
-func (x *GetTransactionsRequest) GetBankId() int64 {
-	if x != nil {
-		return x.BankId
 	}
 	return 0
 }
@@ -1556,12 +1540,10 @@ const file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc = "" +
 	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12\x1b\n" +
 	"\tbank_name\x18\v \x01(\tR\bbankName\x12#\n" +
 	"\rcategory_name\x18\f \x01(\tR\fcategoryName\x12\x1b\n" +
-	"\tuser_name\x18\r \x01(\tR\buserName\"t\n" +
+	"\tuser_name\x18\r \x01(\tR\buserName\"B\n" +
 	"\x16GetTransactionsRequest\x12\x14\n" +
 	"\x05month\x18\x01 \x01(\x05R\x05month\x12\x12\n" +
-	"\x04year\x18\x02 \x01(\x05R\x04year\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x17\n" +
-	"\abank_id\x18\x04 \x01(\x03R\x06bankId\"\xcb\x01\n" +
+	"\x04year\x18\x02 \x01(\x05R\x04year\"\xcb\x01\n" +
 	"\x17GetTransactionsResponse\x12G\n" +
 	"\ftransactions\x18\x01 \x03(\v2#.fin_aggregator_service.TransactionR\ftransactions\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x05R\n" +

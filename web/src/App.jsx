@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import UploadTransactions from './UploadTransactions.jsx';
 import TransactionsList from './TransactionsList.jsx';
+import ChartsView from './ChartsView.jsx';
 import './App.css';
 
 // Monzo Auth Modal Component
@@ -216,9 +217,34 @@ const API = {
     }
 };
 
+// Helper function to get stored date from localStorage
+function getStoredDate() {
+    try {
+        const stored = localStorage.getItem('selectedDate');
+        if (stored) {
+            const date = new Date(stored);
+            if (!isNaN(date.getTime())) {
+                return date;
+            }
+        }
+    } catch (error) {
+        console.error('Error reading stored date:', error);
+    }
+    return new Date();
+}
+
+// Helper function to save date to localStorage
+function saveDate(date) {
+    try {
+        localStorage.setItem('selectedDate', date.toISOString());
+    } catch (error) {
+        console.error('Error saving date:', error);
+    }
+}
+
 // Main App component
 function App() {
-    const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentDate, setCurrentDate] = useState(getStoredDate());
     const [transactions, setTransactions] = useState([]);
     const [categories, setCategories] = useState([]);
     const [banks, setBanks] = useState([]);
@@ -228,6 +254,12 @@ function App() {
     const [success, setSuccess] = useState(null);
     const [showMonzoAuthModal, setShowMonzoAuthModal] = useState(false);
     const [pendingMonzoImport, setPendingMonzoImport] = useState(null);
+    const [activeView, setActiveView] = useState('transactions'); // New state for view switching
+
+    // Update stored date whenever currentDate changes
+    useEffect(() => {
+        saveDate(currentDate);
+    }, [currentDate]);
 
     // Load initial data
     useEffect(() => {
@@ -526,21 +558,43 @@ function App() {
                 </div>
             )}
 
-            <UploadTransactions
-                banks={banks}
-                users={users}
-                onUpload={handleUpload}
-                onMonzoImport={handleMonzoImport}
-            />
+            {/* View Tabs */}
+            <div className="view-tabs-container">
+                <button
+                    className={`view-tab ${activeView === 'transactions' ? 'active' : ''}`}
+                    onClick={() => setActiveView('transactions')}
+                >
+                    Transactions
+                </button>
+                <button
+                    className={`view-tab ${activeView === 'charts' ? 'active' : ''}`}
+                    onClick={() => setActiveView('charts')}
+                >
+                    Analytics
+                </button>
+            </div>
 
-            <TransactionsList
-                currentDate={currentDate}
-                onDateChange={setCurrentDate}
-                transactions={transactions}
-                categories={categories}
-                onTransactionUpdate={handleTransactionUpdate}
-                loading={loading}
-            />
+            {activeView === 'transactions' ? (
+                <>
+                    <UploadTransactions
+                        banks={banks}
+                        users={users}
+                        onUpload={handleUpload}
+                        onMonzoImport={handleMonzoImport}
+                    />
+
+                    <TransactionsList
+                        currentDate={currentDate}
+                        onDateChange={setCurrentDate}
+                        transactions={transactions}
+                        categories={categories}
+                        onTransactionUpdate={handleTransactionUpdate}
+                        loading={loading}
+                    />
+                </>
+            ) : (
+                <ChartsView categories={categories} />
+            )}
 
             {showMonzoAuthModal && (
                 <MonzoAuthModal
