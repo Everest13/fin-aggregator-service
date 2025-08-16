@@ -3,11 +3,14 @@ version: "3.9"
 services:
   db:
     image: postgres:16
+    env_file:
+      - ./config/.env
     environment:
       POSTGRES_USER: fin_aggregator_user
       POSTGRES_DB: fin_aggregator_db
+      DB_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5434:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
@@ -16,12 +19,15 @@ services:
       timeout: 5s
       retries: 5
 
-  user-service:
+  fin-aggregator-service:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8082:8080"
+      - "${HTTP_PORT}:3000"
+      - "${GRPC_PORT}:3001"
+    env_file:
+      - ./config/.env
     environment:
       - ENV=production
       - DB_HOST=db
@@ -31,9 +37,21 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./config/config.yaml:/config/config.yaml
+      - ./config/.env:/config/.env
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
+    ports:
+      - "${FRONTEND_PORT}:5173"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    command: npm run dev
     restart: unless-stopped
 
 volumes:

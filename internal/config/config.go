@@ -10,17 +10,17 @@ const (
 	MonzoClientID       = "MONZO_CLIENT_ID"
 	MonzoClientSecret   = "MONZO_CLIENT_SECRET"
 	MonzoRedirectURI    = "monzo.redirect_uri"
-	GRPCPort            = "grpc.port"
+	GRPCPort            = "GRPC_PORT"
 	GRPCNetwork         = "grpc.network"
-	HTTPPort            = "http.port"
+	HTTPPort            = "HTTP_PORT"
 	HTTPHost            = "http.host"
 	HTTPClientTimeout   = "http.client_timeout"
 	HTTPGracefulTimeout = "http.graceful_timeout"
 	DBName              = "database.name"
 	DBUser              = "database.user"
-	DBPassword          = "database.password"
+	DBPassword          = "DB_PASSWORD"
 	DBHost              = "database.host"
-	DBPort              = "database.port"
+	DBPort              = "DB_PORT"
 	SSLMode             = "database.ssl_mode"
 	DBMaxCons           = "database.max_cons"
 	DBMinCons           = "database.min_cons"
@@ -65,19 +65,19 @@ type Config struct {
 }
 
 func LoadValues() error {
-	viper.SetConfigName(".env_local")
+	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
 	viper.AddConfigPath("config")
 
 	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("failed to load config/.env_local: %w", err)
+		return fmt.Errorf("failed to load config/.env: %w", err)
 	}
 
-	viper.SetConfigName("values_local")
+	viper.SetConfigName("values")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./config")
 	if err := viper.MergeInConfig(); err != nil {
-		return fmt.Errorf("failed to merge config/values_local.yaml: %w", err)
+		return fmt.Errorf("failed to merge config/values.yaml: %w", err)
 	}
 
 	return nil

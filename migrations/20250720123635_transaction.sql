@@ -19,27 +19,5 @@ ALTER TABLE transaction
     ADD CONSTRAINT uniq_transaction_external
         UNIQUE (user_id, bank_id, external_id, amount, transaction_date);
 
-DO $$
-    DECLARE
-        month_start DATE;
-        month_end DATE;
-        partition_name TEXT;
-        i INT;
-    BEGIN
-        FOR i IN 0..11 LOOP
-                month_start := date_trunc('year', CURRENT_DATE) + (i || ' month')::interval;
-                month_end := month_start + interval '1 month';
-                partition_name := format('transaction_%s', to_char(month_start, 'YYYY_MM'));
-
-                EXECUTE format(
-                        'CREATE TABLE IF NOT EXISTS %I PARTITION OF transaction
-                         FOR VALUES FROM (%L) TO (%L);',
-                        partition_name,
-                        month_start,
-                        month_end
-                    );
-            END LOOP;
-    END $$;
-
 -- +goose Down
 DROP TABLE IF EXISTS transaction;
