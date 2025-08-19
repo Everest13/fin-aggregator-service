@@ -6,7 +6,7 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/handmade-jewelry/user/pkg/fin-aggregator;fin_aggregator_service";
+option go_package = "github.com/Everest13/fin-aggregator-service/pkg/fin-aggregator-service;fin_aggregator_service";
 
 service FinAggregatorService {
   rpc GetTransactions(GetTransactionsRequest) returns (GetTransactionsResponse) {

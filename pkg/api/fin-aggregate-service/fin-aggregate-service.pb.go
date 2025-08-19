@@ -1631,7 +1631,7 @@ const file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc = "" +
 	"\bListBank\x12'.fin_aggregator_service.ListBankRequest\x1a(.fin_aggregator_service.ListBankResponse\"\x0e\x82\xd3\xe4\x93\x02\b\x12\x06/banks\x12m\n" +
 	"\bListUser\x12'.fin_aggregator_service.ListUserRequest\x1a(.fin_aggregator_service.ListUserResponse\"\x0e\x82\xd3\xe4\x93\x02\b\x12\x06/users\x12~\n" +
 	"\fListCategory\x12+.fin_aggregator_service.ListCategoryRequest\x1a,.fin_aggregator_service.ListCategoryResponse\"\x13\x82\xd3\xe4\x93\x02\r\x12\v/categories\x12\x9a\x01\n" +
-	"\x13ListTransactionType\x122.fin_aggregator_service.ListTransactionTypeRequest\x1a3.fin_aggregator_service.ListTransactionTypeResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/transaction-typesBLZJgithub.com/handmade-jewelry/user/pkg/fin-aggregator;fin_aggregator_serviceb\x06proto3"
+	"\x13ListTransactionType\x122.fin_aggregator_service.ListTransactionTypeRequest\x1a3.fin_aggregator_service.ListTransactionTypeResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/transaction-typesB_Z]github.com/Everest13/fin-aggregator-service/pkg/fin-aggregator-service;fin_aggregator_serviceb\x06proto3"
 
 var (
 	file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDescOnce sync.Once
