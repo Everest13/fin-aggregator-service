@@ -58,7 +58,7 @@ func (s *Server) runGRPC() error {
 
 	pb.RegisterFinAggregatorServiceServer(s.grpcServer, s.impl)
 
-	lis, err := net.Listen(s.opts.GrpcNetwork, s.opts.GrpcPort)
+	lis, err := net.Listen(s.opts.GrpcNetwork, ":"+s.opts.GrpcPort)
 	if err != nil {
 		log.Printf("Failed to listen: %v", err)
 		return err
@@ -87,13 +87,13 @@ func (s *Server) runHTTP() error {
 
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := pb.RegisterFinAggregatorServiceHandlerFromEndpoint(ctx, mux, s.opts.GrpcPort, opts)
+	err := pb.RegisterFinAggregatorServiceHandlerFromEndpoint(ctx, mux, ":"+s.opts.GrpcPort, opts)
 	if err != nil {
 		return err
 	}
 
 	s.httpServer = &http.Server{
-		Addr:    s.opts.HttpPort,
+		Addr:    ":" + s.opts.HttpPort,
 		Handler: mux,
 	}
 

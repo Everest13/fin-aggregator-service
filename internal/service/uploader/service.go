@@ -107,7 +107,7 @@ func (s *Service) processTransactionBatches(ctx context.Context, records [][]str
 
 		saveErr := s.transactionService.SaveTransactions(ctx, transactions)
 		if saveErr != nil {
-			//todo
+			//todo handling err
 			logger.ErrorWithFields("transaction persistence error", err, "bank_id", bankID, "user_id", userID)
 		}
 	}
