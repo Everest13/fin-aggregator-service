@@ -3,20 +3,22 @@ package app
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/spf13/viper"
+
 	"github.com/Everest13/fin-aggregator-service/internal/config"
 	"github.com/Everest13/fin-aggregator-service/internal/server"
 	"github.com/Everest13/fin-aggregator-service/internal/server/handler"
 	"github.com/Everest13/fin-aggregator-service/internal/service/bank"
 	"github.com/Everest13/fin-aggregator-service/internal/service/category"
 	"github.com/Everest13/fin-aggregator-service/internal/service/monzo"
-	"github.com/Everest13/fin-aggregator-service/internal/service/parser"
 	"github.com/Everest13/fin-aggregator-service/internal/service/transaction"
+	"github.com/Everest13/fin-aggregator-service/internal/service/uploader"
 	"github.com/Everest13/fin-aggregator-service/internal/service/user"
 	"github.com/Everest13/fin-aggregator-service/internal/utils/logger"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/spf13/viper"
-	"strconv"
-	"time"
 )
 
 type App struct {
@@ -29,7 +31,7 @@ type App struct {
 	bankService         *bank.Service
 	userService         *user.Service
 	categoryService     *category.Service
-	parserService       *parser.Service
+	uploaderService     *uploader.Service
 }
 
 func NewApp(ctx context.Context) (*App, error) {
@@ -131,7 +133,7 @@ func (a *App) initImpl() {
 		a.bankService,
 		a.categoryService,
 		a.userService,
-		a.parserService,
+		a.uploaderService,
 		a.monzoService,
 	)
 }
@@ -206,7 +208,12 @@ func (a *App) initService(ctx context.Context) error {
 		return err
 	}
 
-	a.parserService = parser.NewService(a.bankService, a.transactionService, a.categoryService)
+	a.uploaderService = uploader.NewService(a.dBPool, a.bankService, a.transactionService, a.categoryService)
+	err = a.uploaderService.Initialize(ctx)
+	if err != nil {
+		logger.Error("failed to initialize csv process service stores", err)
+		return err
+	}
 
 	a.monzoService = monzo.NewService(&monzo.MonzoCfg{
 		ClientID:     a.cfg.Monzo.ClientID,

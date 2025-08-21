@@ -6,7 +6,7 @@ import (
 )
 
 func (f *FinAggregatorServer) UploadCSV(ctx context.Context, req *pb.UploadCSVRequest) (*pb.UploadCSVResponse, error) {
-	recordErrs, err := f.parserService.UploadCSV(ctx, req.GetBankId(), req.GetUserId(), req.GetCsvData())
+	recordErrs, err := f.uploaderService.UploadCSV(ctx, req.GetBankId(), req.GetUserId(), req.GetCsvData())
 	if err != nil {
 		return nil, err
 	}

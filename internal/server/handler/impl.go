@@ -4,8 +4,8 @@ import (
 	"github.com/Everest13/fin-aggregator-service/internal/service/bank"
 	"github.com/Everest13/fin-aggregator-service/internal/service/category"
 	"github.com/Everest13/fin-aggregator-service/internal/service/monzo"
-	"github.com/Everest13/fin-aggregator-service/internal/service/parser"
 	"github.com/Everest13/fin-aggregator-service/internal/service/transaction"
+	"github.com/Everest13/fin-aggregator-service/internal/service/uploader"
 	"github.com/Everest13/fin-aggregator-service/internal/service/user"
 	pb "github.com/Everest13/fin-aggregator-service/pkg/api/fin-aggregate-service"
 )
@@ -16,7 +16,7 @@ type FinAggregatorServer struct {
 	bankService        *bank.Service
 	categoryService    *category.Service
 	userService        *user.Service
-	parserService      *parser.Service
+	uploaderService    *uploader.Service
 	monzoService       *monzo.Service
 }
 
@@ -25,7 +25,7 @@ func NewFinAggregatorServer(
 	bankService *bank.Service,
 	categoryService *category.Service,
 	userService *user.Service,
-	parserService *parser.Service,
+	uploaderService *uploader.Service,
 	monzoService *monzo.Service,
 ) *FinAggregatorServer {
 	return &FinAggregatorServer{
@@ -33,7 +33,7 @@ func NewFinAggregatorServer(
 		bankService:        bankService,
 		categoryService:    categoryService,
 		userService:        userService,
-		parserService:      parserService,
+		uploaderService:    uploaderService,
 		monzoService:       monzoService,
 	}
 }

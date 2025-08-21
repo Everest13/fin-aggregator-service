@@ -12,7 +12,7 @@ type Category struct {
 	Description *string
 }
 
-type Keyword struct {
+type CategoryKeyword struct {
 	ID         int64
 	CategoryID int64
 	Name       string

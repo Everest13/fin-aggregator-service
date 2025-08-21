@@ -57,29 +57,3 @@ func (r *repository) getBankList(ctx context.Context) ([]Bank, error) {
 
 	return banks, nil
 }
-
-func (r *repository) getBankHeaders(ctx context.Context, bankID int64) ([]Header, error) {
-	query, args, err := squirrel.
-		Select(
-			"id",
-			"bank_id",
-			"name",
-			"ARRAY_AGG(target_field) AS target_field",
-		).
-		From(bankHeaderTable).
-		Where(squirrel.Eq{"bank_id": bankID}).
-		GroupBy("id", "bank_id", "name").
-		PlaceholderFormat(squirrel.Dollar).
-		ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	var headers []Header
-	err = pgxscan.Select(ctx, r.dbPool, &headers, query, args...)
-	if err != nil {
-		return nil, err
-	}
-
-	return headers, nil
-}

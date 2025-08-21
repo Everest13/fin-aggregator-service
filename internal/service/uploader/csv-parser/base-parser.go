@@ -1,9 +1,8 @@
-package parser
+package csv_parser
 
 import (
 	"context"
 	"fmt"
-	"github.com/Everest13/fin-aggregator-service/internal/service/bank"
 	"github.com/Everest13/fin-aggregator-service/internal/service/category"
 	"github.com/Everest13/fin-aggregator-service/internal/service/transaction"
 	"strconv"
@@ -11,9 +10,9 @@ import (
 	"time"
 )
 
-type baseParser struct {
+type BaseParser struct {
 	categoryService *category.Service
-	fieldFuncMap    map[bank.TargetField]func(ctx context.Context, tr *transaction.Transaction, data []string) error
+	fieldFuncMap    map[transaction.TransactionField]func(ctx context.Context, tr *transaction.Transaction, data []string) error
 }
 
 type fieldParser interface {
@@ -24,18 +23,23 @@ type fieldParser interface {
 	parseExternalID(ctx context.Context, tr *transaction.Transaction, data []string) error
 }
 
-func (p *baseParser) initFieldFuncMap(parser fieldParser) {
-	p.fieldFuncMap = map[bank.TargetField]func(ctx context.Context, tr *transaction.Transaction, data []string) error{
-		bank.DateTargetField:        parser.parseDate,
-		bank.AmountTargetField:      parser.parseAmount,
-		bank.DescriptionTargetField: parser.parseDescription,
-		bank.CategoryTargetField:    parser.parseCategory,
-		bank.ExternalIDTargetField:  parser.parseExternalID,
+func (p *BaseParser) initFieldFuncMap(parser fieldParser) {
+	p.fieldFuncMap = map[transaction.TransactionField]func(ctx context.Context, tr *transaction.Transaction, data []string) error{
+		transaction.DateTransactionField:        parser.parseDate,
+		transaction.AmountTransactionField:      parser.parseAmount,
+		transaction.DescriptionTransactionField: parser.parseDescription,
+		transaction.CategoryTransactionField:    parser.parseCategory,
+		transaction.ExternalIDTransactionField:  parser.parseExternalID,
 	}
 }
 
-func (p *baseParser) ParseRecords(ctx context.Context, records [][]string, targetFieldIds map[bank.TargetField][]int, bankID, userID int64) ([]*transaction.Transaction, map[int64][]error) {
-	transactions := make([]*transaction.Transaction, 0, len(records)-1)
+func (p *BaseParser) ParseRecords(
+	ctx context.Context,
+	records [][]string,
+	targetFieldIds map[transaction.TransactionField][]int,
+	bankID, userID int64,
+) ([]*transaction.Transaction, map[int64][]error) {
+	transactions := make([]*transaction.Transaction, 0, len(records))
 
 	processRecord := func(i int) (*transaction.Transaction, []error) {
 		tr := &transaction.Transaction{
@@ -74,7 +78,7 @@ func (p *baseParser) ParseRecords(ctx context.Context, records [][]string, targe
 	}
 
 	recordErrs := map[int64][]error{}
-	for i := 1; i < len(records); i++ {
+	for i := 0; i < len(records); i++ {
 		tr, errs := processRecord(i)
 		if len(errs) != 0 {
 			recordErrs[int64(i+1)] = errs
@@ -93,7 +97,7 @@ var dateFormats = []string{
 	"2006/01/02",
 }
 
-func (p *baseParser) parseDate(ctx context.Context, tr *transaction.Transaction, data []string) error {
+func (p *BaseParser) parseDate(_ context.Context, tr *transaction.Transaction, data []string) error {
 	if len(data) == 0 || data[0] == "" {
 		return fmt.Errorf("empty date data")
 	}
@@ -109,7 +113,7 @@ func (p *baseParser) parseDate(ctx context.Context, tr *transaction.Transaction,
 	return fmt.Errorf("unknown date format: %s", dateStr)
 }
 
-func (p *baseParser) parseCategory(ctx context.Context, tr *transaction.Transaction, data []string) error {
+func (p *BaseParser) parseCategory(ctx context.Context, tr *transaction.Transaction, data []string) error {
 	keywordCategory, err := p.categoryService.GetKeywordCategoryIDMap(ctx)
 	if err != nil {
 		return err
@@ -126,7 +130,7 @@ func (p *baseParser) parseCategory(ctx context.Context, tr *transaction.Transact
 	return nil
 }
 
-func (p *baseParser) parseAmount(_ context.Context, tr *transaction.Transaction, data []string) error {
+func (p *BaseParser) parseAmount(_ context.Context, tr *transaction.Transaction, data []string) error {
 	if len(data) == 0 || data[0] == "" {
 		return fmt.Errorf("empty amount data")
 	}
@@ -149,7 +153,7 @@ func (p *baseParser) parseAmount(_ context.Context, tr *transaction.Transaction,
 	return nil
 }
 
-func (p *baseParser) parseDescription(ctx context.Context, tr *transaction.Transaction, data []string) error {
+func (p *BaseParser) parseDescription(_ context.Context, tr *transaction.Transaction, data []string) error {
 	s := data[0]
 	for i := 1; i < len(data); i++ {
 		s = s + ", " + data[i]
@@ -160,7 +164,7 @@ func (p *baseParser) parseDescription(ctx context.Context, tr *transaction.Trans
 	return nil
 }
 
-func (p *baseParser) parseExternalID(ctx context.Context, tr *transaction.Transaction, data []string) error {
+func (p *BaseParser) parseExternalID(_ context.Context, tr *transaction.Transaction, data []string) error {
 	tr.ExternalID = data[0]
 
 	return nil

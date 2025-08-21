@@ -137,7 +137,7 @@ func (s *Service) SaveTransactions(ctx context.Context, transactions []*Transact
 		return psql.MapPostgresError("failed to save transactions", err)
 	}
 
-	return err
+	return nil
 }
 
 func (s *Service) GetTransactionTypeList() []TransactionType {

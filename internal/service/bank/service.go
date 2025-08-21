@@ -33,12 +33,3 @@ func (s *Service) BankList(ctx context.Context) ([]Bank, error) {
 
 	return banks, nil
 }
-
-func (s *Service) GetBankHeaders(ctx context.Context, bankID int64) ([]Header, error) {
-	headers, err := s.repo.getBankHeaders(ctx, bankID)
-	if err != nil {
-		return nil, psql.MapPostgresError("failed to get bank headers", err)
-	}
-
-	return headers, nil
-}

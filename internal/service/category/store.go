@@ -14,7 +14,7 @@ func NewStore() *Store {
 	}
 }
 
-func (s *Store) ReloadKeywordCategoryIDMap(keywords []Keyword) {
+func (s *Store) ReloadKeywordCategoryIDMap(keywords []CategoryKeyword) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

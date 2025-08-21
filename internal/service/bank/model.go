@@ -13,16 +13,6 @@ const (
 	UnknownBankName BankName = "Unknown"
 )
 
-type TargetField string
-
-const (
-	DateTargetField        TargetField = "DATE"
-	AmountTargetField      TargetField = "AMOUNT"
-	CategoryTargetField    TargetField = "CATEGORY"
-	ExternalIDTargetField  TargetField = "EXTERNALID"
-	DescriptionTargetField TargetField = "DESCRIPTION"
-)
-
 type ImportMethod string
 
 const (
@@ -37,9 +27,9 @@ type Bank struct {
 	ImportMethod ImportMethod
 }
 
-type Header struct {
-	ID          int64
-	BankID      int64
-	Name        string
-	TargetField []TargetField
+type BankHeader struct {
+	ID       int64
+	BankID   int64
+	Name     string
+	Required bool
 }

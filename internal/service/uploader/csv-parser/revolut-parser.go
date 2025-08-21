@@ -1,23 +1,22 @@
-package parser
+package csv_parser
 
 import (
 	"context"
 	"fmt"
-	"github.com/Everest13/fin-aggregator-service/internal/service/bank"
 	"github.com/Everest13/fin-aggregator-service/internal/service/transaction"
 	"strconv"
 )
 
 type revolutParser struct {
-	*baseParser
+	*BaseParser
 }
 
-func newRevolutParser(baseParser *baseParser) *revolutParser {
+func newRevolutParser(baseParser *BaseParser) *revolutParser {
 	rP := &revolutParser{
-		baseParser: baseParser,
+		BaseParser: baseParser,
 	}
 
-	rP.baseParser.fieldFuncMap[bank.AmountTargetField] = rP.parseAmount
+	rP.initFieldFuncMap(rP)
 
 	return rP
 }

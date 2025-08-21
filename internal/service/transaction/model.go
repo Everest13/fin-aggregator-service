@@ -6,6 +6,16 @@ const (
 	transactionTable = "transaction"
 )
 
+type TransactionField string
+
+const (
+	DateTransactionField        TransactionField = "DATE"
+	AmountTransactionField      TransactionField = "AMOUNT"
+	CategoryTransactionField    TransactionField = "CATEGORY"
+	ExternalIDTransactionField  TransactionField = "EXTERNALID"
+	DescriptionTransactionField TransactionField = "DESCRIPTION"
+)
+
 type TransactionType string
 
 const (

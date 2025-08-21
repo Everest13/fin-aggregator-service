@@ -1,4 +1,4 @@
-package parser
+package csv_parser
 
 import (
 	"context"
@@ -11,12 +11,12 @@ import (
 )
 
 type amexParser struct {
-	*baseParser
+	*BaseParser
 }
 
-func newAmexParser(baseParser *baseParser) *amexParser {
+func newAmexParser(baseParser *BaseParser) *amexParser {
 	aP := &amexParser{
-		baseParser: baseParser,
+		BaseParser: baseParser,
 	}
 
 	aP.initFieldFuncMap(aP)

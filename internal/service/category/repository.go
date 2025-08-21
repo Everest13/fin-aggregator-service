@@ -37,7 +37,7 @@ func (r *repository) categoryList(ctx context.Context) ([]Category, error) {
 	return categories, nil
 }
 
-func (r *repository) getCategoriesKeywords(ctx context.Context) ([]Keyword, error) {
+func (r *repository) getCategoriesKeywords(ctx context.Context) ([]CategoryKeyword, error) {
 	query, args, err := squirrel.
 		Select("ck.id", "ck.category_id", "ck.name").
 		From("category_keyword ck").
@@ -48,7 +48,7 @@ func (r *repository) getCategoriesKeywords(ctx context.Context) ([]Keyword, erro
 		return nil, err
 	}
 
-	var result []Keyword
+	var result []CategoryKeyword
 	err = pgxscan.Select(ctx, r.dbPool, &result, query, args...)
 	if err != nil {
 		return nil, err
