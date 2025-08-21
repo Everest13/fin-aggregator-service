@@ -3,7 +3,7 @@
 *.iml
 
 # Config local
-/config/.env_local
-/config/values_local.yaml
+/config/.env
+/config/values.yaml
 
 .DS_Store

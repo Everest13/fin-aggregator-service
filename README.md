@@ -120,7 +120,12 @@ A Go and gRPC-based service for aggregating and managing financial transactions 
 
 ### Configuration
 
-The service can be configured using **environment variables** (`.env`) or **YAML values** (`values.yaml`). Environment variables override YAML settings if both are present.
+The service can be configured using environment variables (.env) or YAML values (values.yaml). 
+Environment variables override YAML settings if both are present.
+
+Before running the service, create these files in the ./config directory:
+- .env — see .env_example for reference.
+- values.yaml — see values_example.yaml for reference.
 
 #### `.env` File
 This file is used for quick local setup and Docker development. Example variables:
