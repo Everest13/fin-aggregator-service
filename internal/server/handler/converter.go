@@ -15,22 +15,27 @@ func convertBankListToPb(banks []bank.Bank) []*pb.Bank {
 		res[i] = &pb.Bank{
 			Id:           b.ID,
 			Name:         b.Name,
-			ImportMethod: convertBankImportTypeToPb(b.ImportMethod),
+			ImportMethod: convertBankImportTypeToPb(b.ImportMethods),
 		}
 	}
 
 	return res
 }
 
-func convertBankImportTypeToPb(importType bank.ImportMethod) pb.BankImportMethod {
-	switch importType {
-	case bank.CSVImportMethod:
-		return pb.BankImportMethod_CSV
-	case bank.APIImportMethod:
-		return pb.BankImportMethod_API
-	default:
-		return pb.BankImportMethod_UNDEFINED
+func convertBankImportTypeToPb(importTypes []bank.ImportMethod) []pb.BankImportMethod {
+	res := make([]pb.BankImportMethod, 0, len(importTypes))
+	for _, importType := range importTypes {
+		switch importType {
+		case bank.CSVImportMethod:
+			res = append(res, pb.BankImportMethod_CSV)
+		case bank.APIImportMethod:
+			res = append(res, pb.BankImportMethod_API)
+		default:
+			res = append(res, pb.BankImportMethod_UNDEFINED)
+		}
 	}
+
+	return res
 }
 
 func convertUserListToPb(users []user.User) []*pb.User {

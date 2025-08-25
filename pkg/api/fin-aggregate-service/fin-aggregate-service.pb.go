@@ -1110,7 +1110,7 @@ type Bank struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	ImportMethod  BankImportMethod       `protobuf:"varint,3,opt,name=import_method,json=importMethod,proto3,enum=fin_aggregator_service.BankImportMethod" json:"import_method,omitempty"`
+	ImportMethod  []BankImportMethod     `protobuf:"varint,3,rep,packed,name=import_method,json=importMethod,proto3,enum=fin_aggregator_service.BankImportMethod" json:"import_method,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1159,11 +1159,11 @@ func (x *Bank) GetName() string {
 	return ""
 }
 
-func (x *Bank) GetImportMethod() BankImportMethod {
+func (x *Bank) GetImportMethod() []BankImportMethod {
 	if x != nil {
 		return x.ImportMethod
 	}
-	return BankImportMethod_UNDEFINED
+	return nil
 }
 
 type ListUserRequest struct {
@@ -1594,7 +1594,7 @@ const file_api_fin_aggregate_service_fin_aggregate_service_proto_rawDesc = "" +
 	"\x04Bank\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12M\n" +
-	"\rimport_method\x18\x03 \x01(\x0e2(.fin_aggregator_service.BankImportMethodR\fimportMethod\"\x11\n" +
+	"\rimport_method\x18\x03 \x03(\x0e2(.fin_aggregator_service.BankImportMethodR\fimportMethod\"\x11\n" +
 	"\x0fListUserRequest\"F\n" +
 	"\x10ListUserResponse\x122\n" +
 	"\x05users\x18\x01 \x03(\v2\x1c.fin_aggregator_service.UserR\x05users\"@\n" +

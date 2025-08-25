@@ -186,7 +186,7 @@ enum BankImportMethod {
 message Bank {
   int64 id = 1;
   string name = 2;
-  BankImportMethod import_method = 3;
+  repeated BankImportMethod import_method = 3;
 }
 
 message ListUserRequest{}

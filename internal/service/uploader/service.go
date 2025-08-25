@@ -147,7 +147,14 @@ func (s *Service) getBankParser(ctx context.Context, bankID int64) (csvParser.Pa
 		return nil, status.Errorf(codes.Internal, "failed to get bank")
 	}
 
-	return s.csvParserFactory.GetParser(bank.BankName(bankInfo.Name)), nil
+	for _, importMethod := range bankInfo.ImportMethods {
+		if importMethod == bank.CSVImportMethod {
+			return s.csvParserFactory.GetParser(bank.BankName(bankInfo.Name)), nil
+		}
+	}
+
+	logger.ErrorWithFields("inappropriate bank import method", nil, "bank_id", bankID)
+	return nil, status.Errorf(codes.Internal, "failed to get bank")
 }
 
 func (s *Service) getHeaderMapping(ctx context.Context, bankID int64) ([]HeaderMapping, error) {

@@ -191,11 +191,17 @@ func (a *App) initDb(ctx context.Context) error {
 }
 
 func (a *App) initService(ctx context.Context) error {
-	a.bankService = bank.NewService(a.dBPool)
 	a.userService = user.NewService(a.dBPool)
 
+	a.bankService = bank.NewService(a.dBPool)
+	err := a.bankService.Initialize(ctx)
+	if err != nil {
+		logger.Error("failed to initialize bank service store", err)
+		return err
+	}
+
 	a.categoryService = category.NewService(a.dBPool)
-	err := a.categoryService.Initialize(ctx)
+	err = a.categoryService.Initialize(ctx)
 	if err != nil {
 		logger.Error("failed to initialize category service store", err)
 		return err

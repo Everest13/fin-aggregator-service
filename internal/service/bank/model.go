@@ -1,8 +1,9 @@
 package bank
 
 const (
-	bankTable       = "bank"
-	bankHeaderTable = "bank_header"
+	bankTable        = "bank"
+	bankHeaderTable  = "bank_header"
+	bankImportMethod = "bank_import_method"
 )
 
 type BankName string
@@ -22,9 +23,9 @@ const (
 )
 
 type Bank struct {
-	ID           int64
-	Name         string
-	ImportMethod ImportMethod
+	ID            int64
+	Name          string
+	ImportMethods []ImportMethod
 }
 
 type BankHeader struct {

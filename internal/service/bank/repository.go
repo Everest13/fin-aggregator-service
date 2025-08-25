@@ -21,9 +21,15 @@ func newRepository(dbPool *pgxpool.Pool) *repository {
 
 func (r *repository) getBank(ctx context.Context, id int64) (*Bank, error) {
 	query, args, err := squirrel.
-		Select("*").
-		From(bankTable).
-		Where(squirrel.Eq{"id": id}).
+		Select(
+			"b.id",
+			"b.name",
+			"COALESCE(array_agg(bim.import_method) FILTER (WHERE bim.import_method IS NOT NULL), '{}') AS import_methods",
+		).
+		From("bank b").
+		LeftJoin("bank_import_method bim ON b.id = bim.bank_id").
+		Where(squirrel.Eq{"b.id": id}).
+		GroupBy("b.id", "b.name").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
@@ -41,8 +47,14 @@ func (r *repository) getBank(ctx context.Context, id int64) (*Bank, error) {
 
 func (r *repository) getBankList(ctx context.Context) ([]Bank, error) {
 	query, args, err := squirrel.
-		Select("*").
-		From(bankTable).
+		Select(
+			"b.id",
+			"b.name",
+			"COALESCE(array_agg(bim.import_method) FILTER (WHERE bim.import_method IS NOT NULL), '{}') AS import_methods",
+		).
+		From("bank b").
+		LeftJoin("bank_import_method bim ON b.id = bim.bank_id").
+		GroupBy("b.id").
 		PlaceholderFormat(squirrel.Dollar).
 		ToSql()
 	if err != nil {
